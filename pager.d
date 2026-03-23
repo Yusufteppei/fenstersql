@@ -1,1 +1,0 @@
-pager.o: pager.c

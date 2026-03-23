@@ -2,7 +2,7 @@
 #include <string.h>
 
 typedef enum {
-  CREATE
+  CREATE,
   INSERT,
   DELETE,
   SELECT
@@ -16,6 +16,6 @@ typedef struct {
   char value[];
 } Command;
 
-int parse_query( char* query ) 
+void parse_query( char* query );
 
-int execute ( int action, char name[32], char* value ) 
+int execute ( char* action, char* object, char value[] );

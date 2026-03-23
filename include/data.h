@@ -4,22 +4,18 @@
 #define TABLES_FILE "tables"
 #define COLUMNS_FILE "columns"
 #define DATABASES_FILE "databases"
+#define PAGES_FILE "pages"
 
+
+#include <stdint.h>
 // Built to Support Variable Sizes for Efficient Memory Usage
 
 typedef enum {
-  DATABASE,
-  TABLE,
-  COLUMN,
-  TUPLE,
-  ATTRIBUTE
+  TABLE_TYPE_METADATA,
+  TABLE_TYPE_USER
 }
-Object;
+TableType;
 
-typedef struct {
-  int32_t database_count;
-}
-Global;
 
 typedef struct {
   int32_t database_id;
@@ -28,11 +24,11 @@ typedef struct {
 }
 Database;
 
+
 typedef struct {
   char name[32];
   int32_t database_id;
-  //char *column_names;
-  int64_t max_size; // CALCULATE FROM THE SUM OF COLUMN MAX_SIZE(S)
+  int16_t table_type;
 }
 Table;
 
@@ -60,5 +56,10 @@ typedef struct {
   char *value;
 }
 Attribute;
+
+
+void select_object( char* object ) ;
+
+void create_object( char* object, char value[32]) ;
 
 #endif
