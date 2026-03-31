@@ -5,30 +5,32 @@
 
 
 typedef struct {
-  int64_t ID;
+  int64_t page_id;
+  int64_t table_id;
+  int32_t empty_start_offset;
+  int32_t empty_end_offset; // 4 BYTES(DIGITS) SINCE PAGES ARE 4096 BYTES(4 DIGITS)
 }
 PageHeader;
 
+
 typedef struct {
-  int64_t ID;
   int64_t page_id;
   int64_t offset;
 }
 Slot;
 
+
 typedef struct {
-    int64_t offset;
     int64_t size;
     char data[];
 }
 PageEntry;
 
-typedef struct {
 
-  int64_t ID;
-  int32_t table_id;
-  int64_t used;
-  PageEntry page_entries[];
+typedef struct {
+  PageHeader page_header;
+  Slot *slots;
+  PageEntry *page_entries;
 }
 Page;
 

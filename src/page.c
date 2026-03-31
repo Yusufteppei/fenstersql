@@ -11,20 +11,26 @@
 #include <fcntl.h>
 
 
-int read_page( int page_number){
 
+Page *get_page_address ( ) {
+  // CHECK PAGE TABLE ( FROM MEMORY ) TO FIND PAGE ADDRESS
 
-  int fd = open(DATABASES_FILE, O_RDWR | O_CREAT, 0644);
+  return 0;
+};
 
-  if (fd == -1) {
-      perror("Error opening file");
-      return 1;
-  }
-
+Page *load_page( int page_id ){
+  // PULL PAGE FROM STORAGE INTO MEMORY; RETURN PAGE ADDRESS
+  
   return 0;
 }
 
-int write_tuple () {
+
+Tuple *read_tuple ( int page_id, int32_t offset ) {
+  
+  return 0;
+};
+
+Tuple *write_tuple () {
 
   return 0;
 }
