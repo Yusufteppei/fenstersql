@@ -2,7 +2,21 @@
 #define PAGE_H
 
 #include <stdint.h>
+#define PAGE_SIZE 4096
+#define BUFFERPOOL_SIZE 1024*1024*1024
+#define PAGE_COUNT BUFFERPOOL_SIZE / PAGE_SIZE
 
+typedef struct {
+  int32_t page_id;
+  int32_t *page_address;
+}
+PageTableEntry;
+
+typedef struct {
+  int32_t magic_number;
+  PageTableEntry *page_table_entries;
+}
+PageTable;
 
 typedef struct {
   int64_t page_id;

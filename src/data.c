@@ -64,7 +64,7 @@ void create_object( char* object, char *value ) {
 
       Database d;
       strcpy(d.name, value);
-      d.database_id=databases_count+1;
+      d.database_oid=databases_count+1;
       d.created_at=0;
 
       fwrite(&d, sizeof(Database), 1, databases_file);

@@ -2,36 +2,34 @@
 #ifndef DATA_H
 #define DATA_H
 
-#define TABLES_FILE "tables"
-#define COLUMNS_FILE "columns"
-#define DATABASES_FILE "databases"
-#define PAGES_FILE "pages"
+#ifdef _WIN32
+  #include <direct.h>
+  #define MKDIR(path, perm) _mkdir(path)
+#else
+  #include <sys/stat.h>
+  #define MKDIR(path, perm) mkdir(path, perm)
+#endif
+
+#define TABLES_FILE "data/tables"
+#define COLUMNS_FILE "data/columns"
+#define DATABASES_FILE "data/databases"
+#define PAGES_FILE "data/pages"
 #define GLOBAL_FILE "data/global"
 
 #include <stdint.h>
+#include <errno.h>
+
+
 // Built to Support Variable Sizes for Efficient Memory Usage
 
-const char MAGIC[4] = {'F', 'S', 'T', 'R'};
+//const char MAGIC[4] = {'F', 'S', 'T', 'R'};
 
 typedef struct {
   int32_t magic_number;
-  int32_t next_db_id;
+  int32_t next_oid;
   int32_t db_count;
 }
 GlobalControl;
-
-typedef struct {
-  int32_t page_id;
-  int32_t *page_address;
-}
-PageTableEntry;
-
-typedef struct {
-  int32_t magic_number;
-  PageTableEntry *page_table_entries;
-}
-PageTable;
-
 
 typedef enum {
   TABLE_TYPE_METADATA,
@@ -73,9 +71,9 @@ typedef struct {
 }
 Tuple;
 
-
+// PERHAPS THERE'S NOTHING LIKE COLUMN
 typedef struct {
-  int32_t column_id; // int64_t where the top32=table_id and btm32=col_id for unique
+  int32_t column_oid; // int64_t where the top32=table_id and btm32=col_id for unique
   char column_name[32];
   char *value;
 }

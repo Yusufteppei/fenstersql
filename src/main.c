@@ -1,13 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "pager.h"
 #include "page.h"
 #include "data.h"
 #include "fenstersql.h"
 #include "parser.h"
 
 int main() {
-    struct Pager pager;
     struct BufferPool *bufferpool = malloc(1024*1024*1024);
 
     Page *pages;
