@@ -4,10 +4,38 @@
 #include "data.h"
 #include "fenstersql.h"
 #include "parser.h"
+#include <signal.h>
 
+#define LOCK_FILE "fenster.pid"
 
 extern GlobalControl *global_control = NULL;
- 
+
+void create_lock_file() {
+    FILE *f = fopen(LOCK_FILE, "wx"); // 'x' means fail if file already exists
+    if (!f) {
+        // File exists! Check if the process inside is actually alive
+        // (Using kill(pid, 0) is a trick to check if a PID is active)
+        printf("Error: Lock file exists. Is another instance running?\n");
+        exit(1);
+    }
+    fprintf(f, "%d", getpid());
+    fclose(f);
+}
+
+void handle_sigint(int sig) {
+    printf("\nCaught signal %d. Cleaning up...\n", sig);
+    
+    // Perform cleanup
+    if (remove(LOCK_FILE) == 0) {
+        printf("Lock file removed successfully.\n");
+    } else {
+        perror("Error removing lock file");
+    }
+
+    // Now exit the program manually
+    exit(0);
+}
+
 // INIT
 void init(){
     printf("Initializing Database\n");
@@ -23,6 +51,11 @@ void init(){
 };
 
 int main() {
+    //////////////////////////////////////
+    pid_t fenster_pid = getpid();
+    create_lock_file();    
+    signal(SIGINT, handle_sigint);
+    ////////////////////////////////////
     init();
     global_control = malloc(sizeof(GlobalControl));
     struct BufferPool *bufferpool = malloc(1024*1024*1024);
@@ -30,7 +63,7 @@ int main() {
     FILE *gcf = fopen(GLOBAL_CONTROL_FILE, "rb");
     fseek(gcf, 0, SEEK_SET);
     fread(global_control, sizeof(GlobalControl), 1, gcf);
-
+    fclose(gcf);
     Page *pages;
     pages = bufferpool;
     /* LOAD METADATA INTO PAGE 0 */
