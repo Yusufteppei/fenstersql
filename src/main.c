@@ -31,6 +31,9 @@ void handle_sigint(int sig) {
     } else {
         perror("Error removing lock file");
     }
+    
+    // Handle Global Control Data
+
 
     // Now exit the program manually
     exit(0);
@@ -40,12 +43,12 @@ void handle_sigint(int sig) {
 void init(){
     printf("Initializing Database\n");
     GlobalControl gc;
-    gc.magic_number = FSTR_MAGIC;
-    gc.next_oid = 1;
+    gc.next_oid = 4;  // READ FROM FILE
+    gc.database_oid = 1;
     // LOAD GLOBAL CONTROL DATA INTO MEMORY
     FILE *gcf = fopen(GLOBAL_CONTROL_FILE, "wb");
     fseek(gcf, 0, SEEK_SET);
-    printf("Writing magic number %d\n", sizeof(gc.magic_number));
+    printf("Writing globalcontrol data \n");
     fwrite(&gc, sizeof(gc), 1, gcf);
     fclose(gcf);
 };
@@ -57,15 +60,15 @@ int main() {
     signal(SIGINT, handle_sigint);
     ////////////////////////////////////
     init();
-    global_control = malloc(sizeof(GlobalControl));
-    struct BufferPool *bufferpool = malloc(1024*1024*1024);
+    BufferPool *bufferpool = malloc(BUFFERPOOL_SIZE);
+    global_control = bufferpool;
     // LOAD GLOBAL CONTROL DATA INTO MEMORY
     FILE *gcf = fopen(GLOBAL_CONTROL_FILE, "rb");
     fseek(gcf, 0, SEEK_SET);
     fread(global_control, sizeof(GlobalControl), 1, gcf);
     fclose(gcf);
     Page *pages;
-    pages = bufferpool;
+    pages = bufferpool + sizeof(GlobalControl);
     /* LOAD METADATA INTO PAGE 0 */
 
     

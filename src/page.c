@@ -12,13 +12,21 @@
 
 #include "page.h"
 
-#define PAGE_SIZE 4096
-#define BUFFERPOOL_SIZE 1024*1024*1024
-#define PAGE_COUNT BUFFERPOOL_SIZE / PAGE_SIZE
+////////////////////////   GLOBAL_CONTROL    //////////////////////////
+int64_t peek_next_oid() {
+  
+  return atomic_load(&global_control->next_oid);
+};
+
+int64_t use_next_oid() {
+  return atomic_fetch_add(&global_control->next_oid, 1);
+}
+
+//////////////////////////////////////////////////////////////////////
 
 
-
-Page *get_page_address ( ) {
+/////////////////////     PAGES HANDLING     ///////////////////////////
+Page *get_page_address ( int64_t table_oid ) {
   // CHECK PAGE TABLE ( FROM MEMORY ) TO FIND PAGE ADDRESS
 
   return 0;
@@ -40,30 +48,6 @@ Tuple *write_tuple () {
 
   return 0;
 }
-#include <unistd.h>
-#include <stdint.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include "page.h"
-
-#define PAGE_SIZE 4096
-#define BUFFERPOOL_SIZE 1024*1024*1024
-#define PAGE_COUNT BUFFERPOOL_SIZE / PAGE_SIZE
 
 
-struct PageTable{
-
-};
-
-typedef struct {
-
-} Pager;
-
-int get_page ( Pager *self,  int32_t page_id ) {
-  int32_t offset = page_id * PAGE_SIZE;
-  return 0;  
-}
-
-
-
-
+///////////////////////////////////////////////////////////////////

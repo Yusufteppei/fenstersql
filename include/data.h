@@ -13,7 +13,7 @@
 #define TABLES_FILE "data/tables"
 #define COLUMNS_FILE "data/columns"
 #define DATABASES_FILE "data/databases"
-#define DATABASES_BASE_DIR "data/base"
+#define DATABASES_BASE_DIR "data/base/"
 #define PAGES_FILE "data/pages"
 #define GLOBAL_CONTROL_FILE "data/global"
 
@@ -26,50 +26,40 @@
 //const char MAGIC[4] = {'F', 'S', 'T', 'R'};
 
 
-typedef struct {
-
-  int32_t magic_number;
-  _Atomic int64_t next_oid;
-}
-GlobalControl;
-extern GlobalControl *global_control;
-
 
 typedef enum {
   TABLE_TYPE_METADATA,
-
+  TABLE_TYPE_USER
 }
 TableType;
 
 
 typedef struct {
   char name[32];
-  int32_t database_oid;
+  int64_t database_oid;
   long long int created_at;
 }
 Database;
 
 
 typedef struct {
+  int64_t column_oid;
+  char column_name[32];
+  int64_t max_size;
+}
+Column;
+
+typedef struct {
   char name[32];
-  int32_t database_oid;
-  int32_t table_oid;
-  int16_t table_type;
+  int64_t table_oid;
+  TableType table_type;
+  int64_t column_oids[];
 }
 Table;
 
 
 typedef struct {
-  int32_t column_oid;
-  char column_name[32];
-  int32_t table_oid;
-  int64_t max_size;
-}
-Column;
-
-
-typedef struct {
-  int32_t tuple_oid;
+  int64_t tuple_oid;
   int64_t SERIAL;
   char *data;
 }
@@ -77,12 +67,15 @@ Tuple;
 
 // PERHAPS THERE'S NOTHING LIKE COLUMN
 typedef struct {
-  int32_t column_oid; // int64_t where the top32=table_id and btm32=col_id for unique
+  int64_t column_oid; // int64_t where the top32=table_id and btm32=col_id for unique
   char column_name[32];
   char *value;
 }
 Attribute;
 
+typedef int64_t number;
+
+typedef char string[32];
 
 void select_object( char* object ) ;
 

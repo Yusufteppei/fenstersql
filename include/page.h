@@ -1,10 +1,24 @@
 #ifndef PAGE_H
 #define PAGE_H
-
+#define FSTR_MAGIC 0x52545346
+ 
 #include <stdint.h>
 #define PAGE_SIZE 4096
 #define BUFFERPOOL_SIZE 1024*1024*1024
 #define PAGE_COUNT BUFFERPOOL_SIZE / PAGE_SIZE
+
+typedef struct {
+  _Atomic int64_t next_oid;
+  int64_t database_oid;
+}
+GlobalControl;
+extern GlobalControl *global_control;
+
+
+typedef struct {
+  int64_t database_oid;
+}
+Context;
 
 typedef struct {
   int32_t page_id;
@@ -13,7 +27,6 @@ typedef struct {
 PageTableEntry;
 
 typedef struct {
-  int32_t magic_number;
   PageTableEntry *page_table_entries;
 }
 PageTable;
@@ -48,5 +61,9 @@ typedef struct {
 }
 Page;
 
-
+typedef struct {
+  GlobalControl gc;
+  Page pages[];
+}
+BufferPool;
 #endif
