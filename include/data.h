@@ -13,27 +13,31 @@
 #define TABLES_FILE "data/tables"
 #define COLUMNS_FILE "data/columns"
 #define DATABASES_FILE "data/databases"
+#define DATABASES_BASE_DIR "data/base"
 #define PAGES_FILE "data/pages"
-#define GLOBAL_FILE "data/global"
+#define GLOBAL_CONTROL_FILE "data/global"
 
 #include <stdint.h>
 #include <errno.h>
-
+#include <stdatomic.h>
 
 // Built to Support Variable Sizes for Efficient Memory Usage
 
 //const char MAGIC[4] = {'F', 'S', 'T', 'R'};
 
+
 typedef struct {
+
   int32_t magic_number;
-  int32_t next_oid;
-  int32_t db_count;
+  _Atomic int64_t next_oid;
 }
 GlobalControl;
+extern GlobalControl *global_control;
+
 
 typedef enum {
   TABLE_TYPE_METADATA,
-  TABLE_TYPE_USER
+
 }
 TableType;
 

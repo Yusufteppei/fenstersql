@@ -9,6 +9,17 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+
+
+int64_t peek_next_oid() {
+  
+  return atomic_load(&global_control->next_oid);
+};
+
+int64_t use_next_oid() {
+  return atomic_fetch_add(&global_control->next_oid, 1);
+}
+
 int database_exists( char *database_name ) {
   
     
@@ -36,16 +47,9 @@ void select_object( char* object ){
 
   if ( strcmp(toupper(object), "DATABASE") == 0) {
       Database d;
-      FILE *databases_file = fopen(DATABASES_FILE, "rb");
-      fseek(databases_file, 0, SEEK_END);
-      long long int filesize = ftell(databases_file);
-      fseek(databases_file, 0, SEEK_SET);
-      while ( 1 == 1 ) {
-        if ( ftell(databases_file) > filesize ) break;
-
-        fread(&d, sizeof(Database), 1, databases_file);
-        printf("%s", d.name);
-      }
+      int64_t database_oid;
+      //if ( mkdir(
+      
   }
 };
 
@@ -55,23 +59,28 @@ void create_object( char* object, char *value ) {
   printf("Creating %s %s\n", object, value);
   FILE *global = fopen("global", "ab");
   string_to_upper(object);
-  if ( strcmp(object, "DATABASE") == 0 ){
+  if ( strcmp(object, "DATABASE") == 0 || strcmp(object, "DB") == 0 ){
       
-      FILE *databases_file = fopen( DATABASES_FILE, "ab+" );
-      int32_t databases_count;
-      fread(&databases_count, sizeof(int32_t), 1, global);
-      fseek(databases_file, 0, SEEK_SET);
+      char oid_string[12]; 
 
       Database d;
       strcpy(d.name, value);
-      d.database_oid=databases_count+1;
+      d.database_oid=use_next_oid();
+      
+      snprintf(oid_string, sizeof(oid_string), "%d", d.database_oid);
+      printf("OID is %d\n", d.database_oid);
       d.created_at=0;
-
-      fwrite(&d, sizeof(Database), 1, databases_file);
       
+      char directory_name[32] = DATABASES_BASE_DIR  "/" ;
+      printf("naming folder..\n"); 
+      strcat(&directory_name, oid_string);
+      printf("folder named %s\n", directory_name);
+      if ( mkdir(directory_name, 0755) == 0) {
+        printf("Database Dog Created\n"); 
+      } else {
+        perror("Error\n");
+      }; 
       
-
-      fclose(databases_file);
 
   }
   else if ( strcmp(object, "TABLE") == 0 ){

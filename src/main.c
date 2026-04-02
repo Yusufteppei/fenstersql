@@ -5,8 +5,31 @@
 #include "fenstersql.h"
 #include "parser.h"
 
+
+extern GlobalControl *global_control = NULL;
+ 
+// INIT
+void init(){
+    printf("Initializing Database\n");
+    GlobalControl gc;
+    gc.magic_number = FSTR_MAGIC;
+    gc.next_oid = 1;
+    // LOAD GLOBAL CONTROL DATA INTO MEMORY
+    FILE *gcf = fopen(GLOBAL_CONTROL_FILE, "wb");
+    fseek(gcf, 0, SEEK_SET);
+    printf("Writing magic number %d\n", sizeof(gc.magic_number));
+    fwrite(&gc, sizeof(gc), 1, gcf);
+    fclose(gcf);
+};
+
 int main() {
+    init();
+    global_control = malloc(sizeof(GlobalControl));
     struct BufferPool *bufferpool = malloc(1024*1024*1024);
+    // LOAD GLOBAL CONTROL DATA INTO MEMORY
+    FILE *gcf = fopen(GLOBAL_CONTROL_FILE, "rb");
+    fseek(gcf, 0, SEEK_SET);
+    fread(global_control, sizeof(GlobalControl), 1, gcf);
 
     Page *pages;
     pages = bufferpool;
