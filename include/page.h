@@ -9,16 +9,10 @@
 
 typedef struct {
   _Atomic int64_t next_oid;
-  int64_t database_oid;
 }
 GlobalControl;
 extern GlobalControl *global_control;
 
-
-typedef struct {
-  int64_t database_oid;
-}
-Context;
 
 typedef struct {
   int32_t page_id;

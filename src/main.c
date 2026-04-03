@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "page.h"
 #include "data.h"
+#include "connection.h"
 #include "fenstersql.h"
 #include "parser.h"
 #include <signal.h>
@@ -9,12 +10,39 @@
 #define LOCK_FILE "fenster.pid"
 
 extern GlobalControl *global_control = NULL;
+extern Context *ctx = NULL;
+
+void init(){
+    printf("Initializing Database\n");
+    global_control->next_oid = 1; 
+
+    // WRITE INITIAL GLOBAL CONTROL DATA INTO FILE
+    FILE *gcf = fopen(GLOBAL_CONTROL_FILE, "wb");
+    fseek(gcf, 0, SEEK_SET);
+    printf("Writing globalcontrol data \n");
+    fwrite(global_control, sizeof(global_control), 1, gcf);
+    fclose(gcf);
+};
+
+
+void load_global_control(){
+    // LOAD GLOBAL CONTROL DATA INTO MEMORY
+    FILE *gcf = fopen(GLOBAL_CONTROL_FILE, "rb");
+    fseek(gcf, 0, SEEK_SET);
+    printf("Reading globalcontrol data \n");
+    fread(global_control, sizeof(GlobalControl), 1, gcf);
+    printf("Global oid : %d\n", global_control->next_oid);
+    fclose(gcf);
+
+};
 
 void create_lock_file() {
     FILE *f = fopen(LOCK_FILE, "wx"); // 'x' means fail if file already exists
     if (!f) {
         // File exists! Check if the process inside is actually alive
         // (Using kill(pid, 0) is a trick to check if a PID is active)
+        
+
         printf("Error: Lock file exists. Is another instance running?\n");
         exit(1);
     }
@@ -33,24 +61,24 @@ void handle_sigint(int sig) {
     }
     
     // Handle Global Control Data
+    FILE *gcf = fopen(GLOBAL_CONTROL_FILE, "wb");
+    fseek(gcf, 0, SEEK_SET);
+    printf("Writing globalcontrol data %d\n", global_control->next_oid);
+    fwrite(global_control, sizeof(global_control), 1, gcf);
+    fclose(gcf);
 
 
     // Now exit the program manually
     exit(0);
 }
 
-// INIT
-void init(){
-    printf("Initializing Database\n");
-    GlobalControl gc;
-    gc.next_oid = 4;  // READ FROM FILE
-    gc.database_oid = 1;
-    // LOAD GLOBAL CONTROL DATA INTO MEMORY
-    FILE *gcf = fopen(GLOBAL_CONTROL_FILE, "wb");
-    fseek(gcf, 0, SEEK_SET);
-    printf("Writing globalcontrol data \n");
-    fwrite(&gc, sizeof(gc), 1, gcf);
-    fclose(gcf);
+
+void connect(){
+  //Context ctx;
+  ctx->database_oid = 1;
+  ctx->user_oid = 9999;
+  
+  printf("Context : %d\n", ctx->database_oid);
 };
 
 int main() {
@@ -59,9 +87,14 @@ int main() {
     create_lock_file();    
     signal(SIGINT, handle_sigint);
     ////////////////////////////////////
-    init();
+
     BufferPool *bufferpool = malloc(BUFFERPOOL_SIZE);
     global_control = bufferpool;
+    ctx = malloc(sizeof(Context));
+    //init();
+    load_global_control();
+    connect();
+    
     // LOAD GLOBAL CONTROL DATA INTO MEMORY
     FILE *gcf = fopen(GLOBAL_CONTROL_FILE, "rb");
     fseek(gcf, 0, SEEK_SET);

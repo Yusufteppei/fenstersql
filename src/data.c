@@ -5,6 +5,7 @@
 #include <string.h>
 #include "data.h"
 #include "page.h"
+#include "connection.h"
 #include <ctype.h>
 #include <stdio.h>
 #include <sys/types.h>
@@ -37,13 +38,15 @@ void create_system_tables() {
 
 
 void create_table(Table table){
+  printf("Create table function call\n");
   char oid_string[12]; 
   char database_oid_string[12];
   
   char directory_name[64] = DATABASES_BASE_DIR;
   char filename[64];
-  printf("Generating DB OID string from OID int %d\n", global_control->database_oid);
-  snprintf(&database_oid_string, sizeof(database_oid_string), "%d", global_control->database_oid);
+  
+  printf("Generating DB OID string from OID int %ld\n", ctx->database_oid);
+  snprintf(&database_oid_string, sizeof(database_oid_string), "%d", ctx->database_oid);
   
   printf("\n%s\nConcatenating directory name from DB OID string\n", oid_string);
 
@@ -61,10 +64,10 @@ void create_table(Table table){
   // CREATE TABLE FILE WITHIN CONTEXT DB
   if ( fopen(filename, "wx") != 0 ){
       //creat(filename, 0755) ;
-      printf("Table file created"); 
+      printf("Table File Created"); 
   }
   else {
-    perror("Message");
+    perror("Table File Creation");
   };
 
   // STORE TABLE METADATA IN TABLES_FILE
@@ -83,7 +86,7 @@ void create_table(Table table){
 
 
 
-///////////////////////////////////////////////////////////////////////
+/////////////////////////    END TABLES     //////////////////////////////
 
 /////////////////////////    DATABASES    /////////////////////////////
 int database_exists( char *database_name ) {
@@ -109,7 +112,7 @@ int database_exists( char *database_name ) {
     return 0;
 }
 
-////////////////////////////////////////////////////////////////
+//////////////////////////    END DATABASES        //////////////////////
 
 //////////////////////////                /////////////////////
 void select_object( char* object ){
@@ -117,7 +120,6 @@ void select_object( char* object ){
   if ( strcmp(toupper(object), "DATABASE") == 0) {
       Database d;
       int64_t database_oid;
-      //if ( mkdir(
       
   }
 };
@@ -158,8 +160,9 @@ void create_object( char* object, char *value ) {
       strcpy(&table.name, value);
       printf("Setting table OID\n");
       table.table_oid = use_next_oid();
+      printf("\n%d\nSetting table type\n", table.table_oid);
       table.table_type = TABLE_TYPE_USER;
-
+      printf("Table type set\n");
       create_table(table);
   }
 };

@@ -19,6 +19,7 @@ int64_t peek_next_oid() {
 };
 
 int64_t use_next_oid() {
+  printf("Generating oid");
   return atomic_fetch_add(&global_control->next_oid, 1);
 }
 
