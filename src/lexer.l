@@ -9,7 +9,7 @@ void yyerror(const char *s);
 %option noyywrap
 
 %%
-"\\q"|"QUIT"              { return QUIT; }
+"\\q"|"QUIT"        { return QUIT; }
 "CREATE"            { return CREATE; }
 "SELECT"            { return SELECT; }
 "FROM"              { return FROM; }

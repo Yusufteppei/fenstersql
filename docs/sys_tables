@@ -12,3 +12,4 @@ TABLE OF INDEXES                fstr_index
 
 
 TABLE OF COLUMNS                information_schema.columns
+oid
