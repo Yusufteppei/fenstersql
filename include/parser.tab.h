@@ -61,15 +61,26 @@ extern int yydebug;
     TABLE = 262,                   /* TABLE  */
     DATABASE = 263,                /* DATABASE  */
     VALUES = 264,                  /* VALUES  */
-    SEMICOLON = 265,               /* SEMICOLON  */
-    COMMA = 266,                   /* COMMA  */
-    RPAREN = 267,                  /* RPAREN  */
-    LPAREN = 268,                  /* LPAREN  */
-    TYPE_STRING = 269,             /* TYPE_STRING  */
-    TYPE_INT = 270,                /* TYPE_INT  */
-    IDENTIFIER = 271,              /* IDENTIFIER  */
-    STRING_LITERAL = 272,          /* STRING_LITERAL  */
-    INT_LITERAL = 273              /* INT_LITERAL  */
+    FROM = 265,                    /* FROM  */
+    RIGHT = 266,                   /* RIGHT  */
+    LEFT = 267,                    /* LEFT  */
+    INNER = 268,                   /* INNER  */
+    OUTER = 269,                   /* OUTER  */
+    JOIN = 270,                    /* JOIN  */
+    ON = 271,                      /* ON  */
+    AS = 272,                      /* AS  */
+    SEMICOLON = 273,               /* SEMICOLON  */
+    DOT = 274,                     /* DOT  */
+    COMMA = 275,                   /* COMMA  */
+    RPAREN = 276,                  /* RPAREN  */
+    LPAREN = 277,                  /* LPAREN  */
+    OPERATOR = 278,                /* OPERATOR  */
+    ASTERISK = 279,                /* ASTERISK  */
+    TYPE_STRING = 280,             /* TYPE_STRING  */
+    TYPE_INT = 281,                /* TYPE_INT  */
+    IDENTIFIER = 282,              /* IDENTIFIER  */
+    STRING_LITERAL = 283,          /* STRING_LITERAL  */
+    INT_LITERAL = 284              /* INT_LITERAL  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -83,7 +94,7 @@ union YYSTYPE
     int ival;
     char *sval;
 
-#line 87 "src/parser.tab.h"
+#line 98 "src/parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

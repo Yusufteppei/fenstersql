@@ -18,8 +18,9 @@ int yylex();
 }
 
 /* Define tokens and associate IDENTIFIER with sval */
-%token CREATE SELECT INSERT INTO TABLE DATABASE VALUES
-%token SEMICOLON COMMA RPAREN LPAREN 
+%token CREATE SELECT INSERT INTO TABLE DATABASE VALUES FROM
+%token RIGHT LEFT INNER OUTER JOIN ON AS
+%token SEMICOLON DOT COMMA RPAREN LPAREN OPERATOR ASTERISK
 %token TYPE_STRING TYPE_INT
 %token <sval> IDENTIFIER STRING_LITERAL
 %token <ival> INT_LITERAL
@@ -36,11 +37,12 @@ statement:
     create_db_stmt
     | create_table_stmt
     | insert_stmt
+    | select_stmt
     ;
 
 create_db_stmt:
     CREATE DATABASE IDENTIFIER SEMICOLON {
-        printf("FensterSQL: Database '%s' created successfully.\n", $3);
+        printf("Database '%s' created successfully.\n", $3);
         free($3); // Clean up the strdup memory
         return 0;
     }
@@ -48,16 +50,50 @@ create_db_stmt:
 
 create_table_stmt:
     CREATE TABLE IDENTIFIER LPAREN column_defs RPAREN SEMICOLON {
-      printf("FensterSQL: Table %s created successfully.\n", $3);
+      printf("Table %s created successfully.\n", $3);
       free($3);
     }
     ;
 
 insert_stmt:
   INSERT INTO IDENTIFIER VALUES LPAREN records RPAREN SEMICOLON {
-    printf("FensterSQL: INSERT INTO succeess.\n");
+    printf("INSERT INTO success.\n");
   }
   ;
+
+select_stmt:
+  SELECT column_sels FROM joined_table SEMICOLON {
+    printf("SELECT success.\n");
+  }
+  ;
+
+column_sels:
+  column_sel
+  | column_sels COMMA column_sel
+
+column_sel:
+  value
+  | ASTERISK
+  | IDENTIFIER DOT ASTERISK
+  | IDENTIFIER DOT IDENTIFIER
+
+joined_table:
+  IDENTIFIER
+  | joined_table join_command IDENTIFIER ON join_predicate
+  | joined_table join_command IDENTIFIER AS IDENTIFIER ON join_predicate
+  ;
+ 
+join_command:
+  JOIN
+  | join_type JOIN
+  
+join_predicate:
+  IDENTIFIER DOT IDENTIFIER OPERATOR IDENTIFIER
+  | IDENTIFIER DOT IDENTIFIER OPERATOR value
+  | IDENTIFIER DOT IDENTIFIER OPERATOR IDENTIFIER DOT IDENTIFIER
+
+join_type:
+  OUTER | INNER | LEFT | RIGHT
 
 records:
     record
@@ -71,9 +107,11 @@ record:
 values:
     value
     | values COMMA value
+    ;
 
 value:
     INT_LITERAL | STRING_LITERAL
+    ;
 
 column_defs:
     column_def
