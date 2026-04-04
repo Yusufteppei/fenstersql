@@ -1,0 +1,14 @@
+TABLE OF DBS                    fstr_database
+
+oid, db_name
+
+TABLE OF TABLES                 fstr_table  
+
+oid, db_name, table_name
+
+TABLE OF USERS                  fstr_user
+TABLE OF INDEXES                fstr_index
+
+
+
+TABLE OF COLUMNS                information_schema.columns

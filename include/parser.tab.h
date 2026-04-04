@@ -74,13 +74,15 @@ extern int yydebug;
     COMMA = 275,                   /* COMMA  */
     RPAREN = 276,                  /* RPAREN  */
     LPAREN = 277,                  /* LPAREN  */
-    OPERATOR = 278,                /* OPERATOR  */
-    ASTERISK = 279,                /* ASTERISK  */
-    TYPE_STRING = 280,             /* TYPE_STRING  */
-    TYPE_INT = 281,                /* TYPE_INT  */
-    IDENTIFIER = 282,              /* IDENTIFIER  */
-    STRING_LITERAL = 283,          /* STRING_LITERAL  */
-    INT_LITERAL = 284              /* INT_LITERAL  */
+    EQUAL = 278,                   /* EQUAL  */
+    OPERATOR = 279,                /* OPERATOR  */
+    ASTERISK = 280,                /* ASTERISK  */
+    TYPE_STRING = 281,             /* TYPE_STRING  */
+    TYPE_INT = 282,                /* TYPE_INT  */
+    QUIT = 283,                    /* QUIT  */
+    IDENTIFIER = 284,              /* IDENTIFIER  */
+    STRING_LITERAL = 285,          /* STRING_LITERAL  */
+    INT_LITERAL = 286              /* INT_LITERAL  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -89,12 +91,12 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 15 "src/parser.y"
+#line 16 "src/parser.y"
 
     int ival;
     char *sval;
 
-#line 98 "src/parser.tab.h"
+#line 100 "src/parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

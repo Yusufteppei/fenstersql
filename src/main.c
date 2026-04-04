@@ -5,7 +5,6 @@
 #include "data.h"
 #include "connection.h"
 #include "fenstersql.h"
-//#include "manual_parser.h"
 #include <signal.h>
 #include <readline/readline.h>
 #include <readline/history.h>
@@ -21,6 +20,9 @@ void init(){
     printf("Initializing Database\n");
     global_control->next_oid = 1; 
     
+    // CREATE SYSTEM TABLES
+    create_system_tables();
+
     // CREATE INITIAL DATABASE
 
     // WRITE INITIAL GLOBAL CONTROL DATA INTO FILE
@@ -60,7 +62,7 @@ void create_lock_file() {
 }
 
 void connect(){
-  //Context ctx;
+
   ctx->database_oid = 1;
   ctx->user_oid = 9999;
   
@@ -68,33 +70,31 @@ void connect(){
 };
 
 int main() {
+    
     //////////////////////////////////////
     pid_t fenster_pid = getpid();
     create_lock_file();    
     signal(SIGINT, handle_sigint);
+    
     ////////////////////////////////////
 
     BufferPool *bufferpool = malloc(BUFFERPOOL_SIZE);
     global_control = bufferpool;
     ctx = malloc(sizeof(Context));
-    init();
+    //init();
     load_global_control();
     connect();
     
-    // LOAD GLOBAL CONTROL DATA INTO MEMORY
-    FILE *gcf = fopen(GLOBAL_CONTROL_FILE, "rb");
-    fseek(gcf, 0, SEEK_SET);
-    fread(global_control, sizeof(GlobalControl), 1, gcf);
-    fclose(gcf);
+    ////////////////////////////////////
+    
     Page *pages;
     pages = bufferpool + sizeof(GlobalControl);
-
     
-
+    ////////////////////////////////////
+    
     system("figlet 'FENSTERSQL'");
-    char *line;
-
     
+    char *line;
     while ((line = readline("fenstersql# ")) != NULL) {
         if (*line) {
             add_history(line);      // Adds to arrow-key history
@@ -104,6 +104,9 @@ int main() {
         free(line);
     }
     
-    free(bufferpool);
+    /////////////////////////////////////
+
+    free(pages); free(bufferpool);
+    
     return 0;
     }

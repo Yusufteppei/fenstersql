@@ -13,7 +13,10 @@
 #include <unistd.h>
 
 ///////////////////////////    SYSTEM TABLES   /////////////////////////
-void create_table_of_dbs(){};
+void create_table_of_dbs(){
+
+
+};
 
 void create_table_of_tables(){};
 
@@ -134,43 +137,3 @@ int create_database( Database database ) {
 
 //////////////////////////    END DATABASES        //////////////////////
 
-//////////////////////////                /////////////////////
-void select_object( char* object ){
-
-  if ( strcmp(toupper(object), "DATABASE") == 0) {
-      Database d;
-      int64_t database_oid;
-      
-  }
-};
-
-
-void create_object( char* object, char *value ) {
-
-  printf("Creating %s %s\n", object, value);
-  FILE *global = fopen("global", "ab");
-  string_to_upper(object);
-  if ( strcmp(object, "DATABASE") == 0 || strcmp(object, "DB") == 0 ){
-      
-      char oid_string[12]; 
-
-      Database d;
-      strcpy(d.name, value);
-      d.database_oid=use_next_oid();
-      
-      create_database(d); 
-
-  }
-  else if ( strcmp(object, "TABLE") == 0 ){
-      Table table;
-      printf("Copying name into table struct\n");
-      strcpy(&table.name, value);
-      printf("Setting table OID\n");
-      table.table_oid = use_next_oid();
-      printf("\n%d\nSetting table type\n", table.table_oid);
-      table.table_type = TABLE_TYPE_USER;
-      printf("Table type set\n");
-      create_table(table);
-  }
-};
-//////////////////////////////////////////////////////////

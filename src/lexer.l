@@ -9,6 +9,7 @@ void yyerror(const char *s);
 %option noyywrap
 
 %%
+"\\q"|"QUIT"              { return QUIT; }
 "CREATE"            { return CREATE; }
 "SELECT"            { return SELECT; }
 "FROM"              { return FROM; }
@@ -37,6 +38,7 @@ void yyerror(const char *s);
 \"[^']*\"             { yylval.sval = strdup(yytext); return STRING_LITERAL; }
 [0-9]*              { yylval.ival = yytext; return INT_LITERAL; }
 [ \t\r\n]+          { /* ignore */ }
-[+|-|=]             { return OPERATOR; }
+[+|-]               { return OPERATOR; }
+[=]                 { return EQUAL; }
 .                   { return yytext[0]; }
 %

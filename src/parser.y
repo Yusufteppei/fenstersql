@@ -1,6 +1,7 @@
 %{
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "signals.h"
 #include <signal.h>
 #include "data.h"
@@ -20,8 +21,9 @@ int yylex();
 /* Define tokens and associate IDENTIFIER with sval */
 %token CREATE SELECT INSERT INTO TABLE DATABASE VALUES FROM
 %token RIGHT LEFT INNER OUTER JOIN ON AS
-%token SEMICOLON DOT COMMA RPAREN LPAREN OPERATOR ASTERISK
+%token SEMICOLON DOT COMMA RPAREN LPAREN EQUAL OPERATOR ASTERISK
 %token TYPE_STRING TYPE_INT
+%token QUIT
 %token <sval> IDENTIFIER STRING_LITERAL
 %token <ival> INT_LITERAL
 
@@ -38,10 +40,16 @@ statement:
     | create_table_stmt
     | insert_stmt
     | select_stmt
+
+    | quit_stmt
     ;
 
 create_db_stmt:
     CREATE DATABASE IDENTIFIER SEMICOLON {
+        Database d;
+        d.database_oid = use_next_oid();
+        strcpy(d.name, $3);
+        create_database(d);
         printf("Database '%s' created successfully.\n", $3);
         free($3); // Clean up the strdup memory
         return 0;
@@ -67,6 +75,12 @@ select_stmt:
   }
   ;
 
+quit_stmt:
+  QUIT {
+    handle_sigint(0);
+  }
+  ;
+
 column_sels:
   column_sel
   | column_sels COMMA column_sel
@@ -88,9 +102,9 @@ join_command:
   | join_type JOIN
   
 join_predicate:
-  IDENTIFIER DOT IDENTIFIER OPERATOR IDENTIFIER
-  | IDENTIFIER DOT IDENTIFIER OPERATOR value
-  | IDENTIFIER DOT IDENTIFIER OPERATOR IDENTIFIER DOT IDENTIFIER
+  IDENTIFIER DOT IDENTIFIER EQUAL IDENTIFIER
+  | IDENTIFIER DOT IDENTIFIER EQUAL IDENTIFIER DOT IDENTIFIER
+  | IDENTIFIER DOT IDENTIFIER EQUAL value
 
 join_type:
   OUTER | INNER | LEFT | RIGHT
@@ -111,6 +125,10 @@ values:
 
 value:
     INT_LITERAL | STRING_LITERAL
+    | INT_LITERAL OPERATOR INT_LITERAL
+    | IDENTIFIER OPERATOR IDENTIFIER
+    | STRING_LITERAL OPERATOR STRING_LITERAL
+    | STRING_LITERAL OPERATOR INT_LITERAL
     ;
 
 column_defs:
@@ -128,7 +146,6 @@ data_type:
     ;
 
     
-
 %%
 
 void yyerror(const char *s) {

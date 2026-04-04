@@ -43,20 +43,20 @@ Database;
 
 
 typedef struct {
+  char name[32];
+  int64_t table_oid;
+  TableType table_type;
+}
+Table;
+
+
+typedef struct {
   int64_t column_oid;
+  int64_t table_oid;
   char column_name[32];
   int64_t max_size;
 }
 Column;
-
-typedef struct {
-  char name[32];
-  int64_t table_oid;
-  TableType table_type;
-  int64_t column_oids[];
-}
-Table;
-
 
 typedef struct {
   int64_t tuple_oid;
