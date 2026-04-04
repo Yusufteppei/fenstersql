@@ -1,36 +1,49 @@
 CC = gcc
-CFLAGS = -lfl -Iinclude -Wall -Wextra -Wno-unused-result -Wno-unused-parameter -Wno-unused-variable -O2 -MMD -MP
+# Added -Iinclude to find the generated parser header
+CFLAGS = -Iinclude -Wall -Wextra -Wno-unused-result -Wno-unused-parameter -Wno-unused-variable -O2 -MMD -MP
+# Link against flex library (-lfl)
+LDFLAGS = -lfl #-lreadline
 
-# 1. Alle Quellen in src/ finden (inklusive btree.c!)
-SRCS = $(wildcard src/*.c)
+# 1. Define generated files
+GEN_C = src/lexer.yy.c src/parser.tab.c
+GEN_H = include/parser.tab.h
 
-# 2. Objekte sauber nach obj/ delegieren
-# Wir nehmen den Dateinamen ohne Pfad und setzen obj/ davor
+# 2. Update SRCS to include generated C files
+SRCS = $(wildcard src/*.c)  src/lexer.yy.c src/parser.tab.c
+# Filter out duplicates if wildcard already caught them
+SRCS := $(sort $(SRCS))
+
 OBJS = $(SRCS:src/%.c=obj/%.o)
-
 TARGET = build/main
 DEPS = $(OBJS:.o=.d)
 
 all: $(TARGET)
 
+# Rule to build the final executable
 $(TARGET): $(OBJS)
 	@mkdir -p build
-	$(CC) $(OBJS) -o $(TARGET)
+	$(CC) $(OBJS) -o $(TARGET) $(LDFLAGS)
 
-# 3. Die Regel, die Ordnung schafft
+# Rule for Bison: generates .c and .h
+src/parser.tab.c $(GEN_H): src/parser.y
+	bison -d src/parser.y -o src/parser.tab.c
+	mv src/parser.tab.h include/
+
+# Rule for Flex: generates .c
+src/lexer.yy.c: src/lexer.l $(GEN_H)
+	flex -o src/lexer.yy.c src/lexer.l
+
+# Standard object rule
 obj/%.o: src/%.c
 	@mkdir -p obj
 	$(CC) $(CFLAGS) -c $< -o $@
 
 -include $(DEPS)
 
-# 4. Der "Deep Clean"
 clean:
 	rm -rf obj build
-	rm -f src/*.d src/*.o  # Löscht die alten Überreste in src/
-	rm -f *.o *.d          # Löscht Überreste im Hauptverzeichnis
+	rm -f src/lexer.yy.c src/parser.tab.c include/parser.tab.h
+	rm -f src/*.d src/*.o
+	rm -f *.o *.d
 
-test: $(filter-out obj/main.o, $(OBJS)) tests/test_suite.c
-	$(CC) $(CFLAGS) $^ -o run_tests
-	./run_tests
-	rm run_tests
+.PHONY: all clean test

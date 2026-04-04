@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
-#include "parser.h"
+#include "manual_parser.h"
 #include "data.h"
 
 void string_to_upper(char *s) {

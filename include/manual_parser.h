@@ -1,6 +1,6 @@
 #include <stdint.h>
 #include <string.h>
-
+/*
 typedef enum {
   CREATE,
   INSERT,
@@ -8,7 +8,7 @@ typedef enum {
   SELECT
 }
 ACTION;
-
+*/
 
 typedef struct {
   int action;

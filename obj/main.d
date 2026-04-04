@@ -1,7 +1,8 @@
-obj/main.o: src/main.c include/page.h include/data.h include/connection.h \
- include/fenstersql.h include/parser.h
+obj/main.o: src/main.c include/page.h include/signals.h include/data.h \
+ include/connection.h include/fenstersql.h include/parser.tab.h
 include/page.h:
+include/signals.h:
 include/data.h:
 include/connection.h:
 include/fenstersql.h:
-include/parser.h:
+include/parser.tab.h:
