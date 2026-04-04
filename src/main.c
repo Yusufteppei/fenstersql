@@ -15,6 +15,8 @@ extern Context *ctx = NULL;
 void init(){
     printf("Initializing Database\n");
     global_control->next_oid = 1; 
+    
+    // CREATE INITIAL DATABASE
 
     // WRITE INITIAL GLOBAL CONTROL DATA INTO FILE
     FILE *gcf = fopen(GLOBAL_CONTROL_FILE, "wb");
@@ -41,7 +43,7 @@ void create_lock_file() {
     if (!f) {
         // File exists! Check if the process inside is actually alive
         // (Using kill(pid, 0) is a trick to check if a PID is active)
-        
+                
 
         printf("Error: Lock file exists. Is another instance running?\n");
         exit(1);
@@ -112,7 +114,7 @@ int main() {
     system("figlet 'FENSTERSQL'");
 
     while (1) {
-        printf("\nfenstersql# ");
+        printf("\n\n\n\n\n\n\n\n\nfenstersql# ");
         fflush(stdout); // Ensure prompt shows up immediately
 
         // Limit width to prevent buffer overflows

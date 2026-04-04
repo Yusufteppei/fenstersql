@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Iinclude -Wall -Wextra -Wno-unused-result -Wno-unused-parameter -Wno-unused-variable -O2 -MMD -MP
+CFLAGS = -lfl -Iinclude -Wall -Wextra -Wno-unused-result -Wno-unused-parameter -Wno-unused-variable -O2 -MMD -MP
 
 # 1. Alle Quellen in src/ finden (inklusive btree.c!)
 SRCS = $(wildcard src/*.c)

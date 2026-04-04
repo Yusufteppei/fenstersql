@@ -38,10 +38,9 @@ void create_system_tables() {
 
 
 void create_table(Table table){
-  printf("Create table function call\n");
+
   char oid_string[12]; 
   char database_oid_string[12];
-  
   char directory_name[64] = DATABASES_BASE_DIR;
   char filename[64];
   
@@ -112,6 +111,27 @@ int database_exists( char *database_name ) {
     return 0;
 }
 
+
+int create_database( Database database ) {
+
+      char oid_string[12]; 
+
+      snprintf(oid_string, sizeof(oid_string), "%d", database.database_oid);
+      printf("OID is %d\n", database.database_oid);
+      database.created_at=0;
+      
+      char directory_name[32] = DATABASES_BASE_DIR ;
+      printf("naming folder..\n"); 
+      strcat(&directory_name, oid_string);
+      printf("folder named %s\n", directory_name);
+      if ( mkdir(directory_name, 0755) == 0) {
+        printf("Database %s Created\n", database.name); 
+      } else {
+        perror("Error\n");
+      }; 
+
+};
+
 //////////////////////////    END DATABASES        //////////////////////
 
 //////////////////////////                /////////////////////
@@ -138,20 +158,7 @@ void create_object( char* object, char *value ) {
       strcpy(d.name, value);
       d.database_oid=use_next_oid();
       
-      snprintf(oid_string, sizeof(oid_string), "%d", d.database_oid);
-      printf("OID is %d\n", d.database_oid);
-      d.created_at=0;
-      
-      char directory_name[32] = DATABASES_BASE_DIR ;
-      printf("naming folder..\n"); 
-      strcat(&directory_name, oid_string);
-      printf("folder named %s\n", directory_name);
-      if ( mkdir(directory_name, 0755) == 0) {
-        printf("Database %s Created\n", d.name); 
-      } else {
-        perror("Error\n");
-      }; 
-      
+      create_database(d); 
 
   }
   else if ( strcmp(object, "TABLE") == 0 ){

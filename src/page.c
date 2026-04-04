@@ -27,6 +27,12 @@ int64_t use_next_oid() {
 
 
 /////////////////////     PAGES HANDLING     ///////////////////////////
+
+void register_table (  ) {
+
+};
+
+
 Page *get_page_address ( int64_t table_oid ) {
   // CHECK PAGE TABLE ( FROM MEMORY ) TO FIND PAGE ADDRESS
 
