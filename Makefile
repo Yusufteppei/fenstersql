@@ -2,7 +2,7 @@ CC = gcc
 # Added -Iinclude to find the generated parser header
 CFLAGS = -Iinclude -Wall -Wextra -Wno-unused-result -Wno-unused-parameter -Wno-unused-variable -O2 -MMD -MP
 # Link against flex library (-lfl)
-LDFLAGS = -lfl #-lreadline
+LDFLAGS = -lfl -lreadline
 
 # 1. Define generated files
 GEN_C = src/lexer.yy.c src/parser.tab.c
