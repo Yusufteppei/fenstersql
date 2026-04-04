@@ -18,9 +18,11 @@ int yylex();
 }
 
 /* Define tokens and associate IDENTIFIER with sval */
-%token CREATE TABLE DATABASE SEMICOLON COMMA RPAREN LPAREN TYPE_STRING TYPE_INT
+%token CREATE SELECT INSERT INTO TABLE DATABASE VALUES
+%token SEMICOLON COMMA RPAREN LPAREN 
+%token TYPE_STRING TYPE_INT
 %token <sval> IDENTIFIER STRING_LITERAL
-%token <ival> NUMBER
+%token <ival> INT_LITERAL
 
 %%
 
@@ -33,6 +35,7 @@ input:
 statement:
     create_db_stmt
     | create_table_stmt
+    | insert_stmt
     ;
 
 create_db_stmt:
@@ -50,6 +53,28 @@ create_table_stmt:
     }
     ;
 
+insert_stmt:
+  INSERT INTO IDENTIFIER VALUES LPAREN records RPAREN SEMICOLON {
+    printf("FensterSQL: INSERT INTO succeess.\n");
+  }
+  ;
+
+records:
+    record
+    | records COMMA record
+    ;
+
+record:
+    LPAREN values RPAREN
+    ;
+
+values:
+    value
+    | values COMMA value
+
+value:
+    INT_LITERAL | STRING_LITERAL
+
 column_defs:
     column_def
     | column_defs COMMA column_def
@@ -57,10 +82,12 @@ column_defs:
 
 column_def:
     IDENTIFIER data_type
+    ;
 
 
 data_type:
     TYPE_INT | TYPE_STRING
+    ;
 
     
 

@@ -55,17 +55,21 @@ extern int yydebug;
     YYerror = 256,                 /* error  */
     YYUNDEF = 257,                 /* "invalid token"  */
     CREATE = 258,                  /* CREATE  */
-    TABLE = 259,                   /* TABLE  */
-    DATABASE = 260,                /* DATABASE  */
-    SEMICOLON = 261,               /* SEMICOLON  */
-    COMMA = 262,                   /* COMMA  */
-    RPAREN = 263,                  /* RPAREN  */
-    LPAREN = 264,                  /* LPAREN  */
-    TYPE_STRING = 265,             /* TYPE_STRING  */
-    TYPE_INT = 266,                /* TYPE_INT  */
-    IDENTIFIER = 267,              /* IDENTIFIER  */
-    STRING_LITERAL = 268,          /* STRING_LITERAL  */
-    NUMBER = 269                   /* NUMBER  */
+    SELECT = 259,                  /* SELECT  */
+    INSERT = 260,                  /* INSERT  */
+    INTO = 261,                    /* INTO  */
+    TABLE = 262,                   /* TABLE  */
+    DATABASE = 263,                /* DATABASE  */
+    VALUES = 264,                  /* VALUES  */
+    SEMICOLON = 265,               /* SEMICOLON  */
+    COMMA = 266,                   /* COMMA  */
+    RPAREN = 267,                  /* RPAREN  */
+    LPAREN = 268,                  /* LPAREN  */
+    TYPE_STRING = 269,             /* TYPE_STRING  */
+    TYPE_INT = 270,                /* TYPE_INT  */
+    IDENTIFIER = 271,              /* IDENTIFIER  */
+    STRING_LITERAL = 272,          /* STRING_LITERAL  */
+    INT_LITERAL = 273              /* INT_LITERAL  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -79,7 +83,7 @@ union YYSTYPE
     int ival;
     char *sval;
 
-#line 83 "src/parser.tab.h"
+#line 87 "src/parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
