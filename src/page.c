@@ -2,6 +2,8 @@
 
 #include "fenstersql.h"
 #include "data.h"
+#include "connection.h"
+#include "fstr_strings.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -64,15 +66,30 @@ void create_page_table_entry ( PageTableEntry page_table_entry){
   pte = page_table->page_table_entries + sizeof(PageEntry) * page_table->entry_count ;
   page_table->entry_count++;
 
-  printf("Page Table Entry Created.\n %64d : %32d \nEntry Count : %32d", page_table->entry_count );
+  printf("Page Table Entry Created.\n %64d : %32d \nEntry Count : %32d",page_table->page_table_entries[page_table->entry_count-1].table_oid, page_table->page_table_entries[page_table->entry_count-1].page_id, page_table->entry_count );
   
 };
 
 
-Page *load_table( int table_oid ){
+Page *load_table( Context *context, int table_oid ){
   // PULL TABLE FROM STORAGE INTO PAGES, UPDATE PAGE TABLE; RETURN START PAGE ADDRESS
   
-  // GET 
+  // GET TABLE FILE AND READ IN BATCHES OF PAGE_SIZE INTO PAGES, UPDATE PAGE TABLE 
+  char table_filename[32];
+  strcpy(table_filename, int_to_string(table_oid));
+  char database_dir[32] = DATABASES_BASE_DIR;
+  strcat(database_dir, int_to_string(ctx->database_oid));
+  
+  char pathname[128];
+  strcat(database_dir, table_filename);
+  strcpy(pathname, database_dir);
+
+  //  READ FILE
+
+  FILE *file = fopen(pathname, "rb");
+
+
+
   return 0;
 }
 

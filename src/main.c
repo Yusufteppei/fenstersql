@@ -127,6 +127,6 @@ int main() {
 
     //free(pages); 
     free(bufferpool);
-    
+    free(page_table);    
     return 0;
     }
