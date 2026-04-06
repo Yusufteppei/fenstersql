@@ -38,7 +38,7 @@ void load_global_control(){
     // LOAD GLOBAL CONTROL DATA INTO MEMORY
     FILE *gcf = fopen(GLOBAL_CONTROL_FILE, "rb");
     fseek(gcf, 0, SEEK_SET);
-    printf("Reading globalcontrol data \n");
+    //printf("Reading globalcontrol data \n");
     fread(global_control, sizeof(GlobalControl), 1, gcf);
     printf("Global oid : %d\n", global_control->next_oid);
     fclose(gcf);
@@ -49,7 +49,7 @@ void create_lock_file() {
     FILE *f = fopen(LOCK_FILE, "wx"); // 'x' means fail if file already exists
     if (!f) {
         // File exists! Check if the process inside is actually alive
-        printf("File Exists\n");
+        //printf("File Exists\n");
         FILE *fp = fopen(LOCK_FILE, "rb"); 
         int pid = 0;
         fseek(fp, 0, SEEK_SET);
@@ -58,7 +58,7 @@ void create_lock_file() {
         fclose(fp);
         if (kill(pid, 0) == 0 ) {        
           // PROCESS IS ALIVE 
-          printf("Another instance of fenstersql seems to be running\n");
+          printf("Another instance of fenstersql seems to be running!!!\n");
           exit(1);
         }
         else{
@@ -79,11 +79,12 @@ void connect(){
   ctx->database_oid = 1;
   ctx->user_oid = 9999;
   
-  printf("Context : %d\n", ctx->database_oid);
+  printf("Context    : %d\n", ctx->database_oid);
 };
 
 int main() {
     
+    system("figlet 'FENSTERSQL'");
     //////////////////////////////////////
     pid_t fenster_pid = getpid();
     create_lock_file();    
@@ -104,9 +105,9 @@ int main() {
     pages = bufferpool + sizeof(GlobalControl);
     
     ////////////////////////////////////
-    printf("pid : %d\n", getpid()); 
-    system("figlet 'FENSTERSQL'");
+    printf("pid        : %d\n", getpid()); 
     
+    printf("\n\n\n");
     char *line;
     while ((line = readline("fenstersql# ")) != NULL) {
         if (*line) {

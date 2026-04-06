@@ -5,7 +5,7 @@
 #include <stdint.h>
 #define PAGE_SIZE 4096
 #define BUFFERPOOL_SIZE 1024*1024*1024
-#define PAGE_COUNT BUFFERPOOL_SIZE / PAGE_SIZE
+#define MAX_LIVE_PAGE_COUNT BUFFERPOOL_SIZE / PAGE_SIZE
 
 typedef struct {
   _Atomic int64_t next_oid;

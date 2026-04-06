@@ -28,6 +28,10 @@ int64_t use_next_oid() {
 
 /////////////////////     PAGES HANDLING     ///////////////////////////
 
+void load_page_table( ) {
+
+};
+
 void register_table (  ) {
 
 };

@@ -18,7 +18,7 @@ void handle_sigint(int sig) {
     // Handle Global Control Data
     FILE *gcf = fopen(GLOBAL_CONTROL_FILE, "w");
     fseek(gcf, 0, SEEK_SET);
-    printf("Writing globalcontrol data %d\n", global_control->next_oid);
+    printf("Writing global control data \n");
     fwrite(global_control, sizeof(global_control), 1, gcf);
     fclose(gcf);
 

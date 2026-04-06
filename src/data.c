@@ -72,7 +72,7 @@ void create_table(Table table){
     perror("Table File Creation");
   };
 
-  // STORE TABLE METADATA IN TABLES_FILE
+  // STORE TABLE METADATA IN TABLES_FILE (TABLES OF TABLES)
   FILE *tables_file = fopen( TABLES_FILE, "ab" );
 
   fwrite(&table, sizeof(Table), 1, tables_file );
@@ -80,7 +80,6 @@ void create_table(Table table){
   fclose(tables_file);
   
 
-  // INCLUDE NEW TABLE INTO TABLE OF TABLES
   
 };
 

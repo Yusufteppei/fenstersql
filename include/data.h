@@ -10,21 +10,18 @@
   #define MKDIR(path, perm) mkdir(path, perm)
 #endif
 
-#define TABLES_FILE "data/tables"
-#define COLUMNS_FILE "data/columns"
-#define DATABASES_FILE "data/databases"
+#define TABLES_FILE "data/sys/fstr_table"
+#define COLUMNS_FILE "data/sys/fstr_column"
+#define DATABASES_FILE "data/sys/fstr_database"
 #define DATABASES_BASE_DIR "data/base/"
-#define PAGES_FILE "data/pages"
-#define GLOBAL_CONTROL_FILE "data/global"
+#define PAGES_FILE "data/sys/fstr_pages"
+#define GLOBAL_CONTROL_FILE "data/sys/fstr_global"
 
 #include <stdint.h>
 #include <errno.h>
 #include <stdatomic.h>
 
 // Built to Support Variable Sizes for Efficient Memory Usage
-
-//const char MAGIC[4] = {'F', 'S', 'T', 'R'};
-
 
 
 typedef enum {
