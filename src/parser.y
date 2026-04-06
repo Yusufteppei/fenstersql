@@ -58,6 +58,11 @@ create_db_stmt:
 
 create_table_stmt:
     CREATE TABLE IDENTIFIER LPAREN column_defs RPAREN SEMICOLON {
+      Table t;
+      t.table_oid = use_next_oid();
+      strcpy(t.name, $3);
+      t.table_type = TABLE_TYPE_USER;
+      create_table(t);
       printf("Table %s created successfully.\n", $3);
       free($3);
     }

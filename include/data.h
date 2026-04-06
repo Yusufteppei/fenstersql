@@ -15,6 +15,7 @@
 #define DATABASES_FILE "data/sys/fstr_database"
 #define DATABASES_BASE_DIR "data/base/"
 #define PAGES_FILE "data/sys/fstr_pages"
+#define PAGE_TABLE_FILE "data/sys/fstr_pagetable"
 #define GLOBAL_CONTROL_FILE "data/sys/fstr_global"
 
 #include <stdint.h>

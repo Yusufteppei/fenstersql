@@ -19,7 +19,7 @@ void handle_sigint(int sig) {
     FILE *gcf = fopen(GLOBAL_CONTROL_FILE, "w");
     fseek(gcf, 0, SEEK_SET);
     printf("Writing global control data \n");
-    fwrite(global_control, sizeof(global_control), 1, gcf);
+    fwrite(&bufferpool->global_control, sizeof(GlobalControl), 1, gcf);
     fclose(gcf);
 
 

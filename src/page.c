@@ -15,12 +15,12 @@
 ////////////////////////   GLOBAL_CONTROL    //////////////////////////
 int64_t peek_next_oid() {
   
-  return atomic_load(&global_control->next_oid);
+  return atomic_load(&bufferpool->global_control.next_oid);
 };
 
 int64_t use_next_oid() {
   printf("Generating oid");
-  return atomic_fetch_add(&global_control->next_oid, 1);
+  return atomic_fetch_add(&bufferpool->global_control.next_oid, 1);
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -28,8 +28,14 @@ int64_t use_next_oid() {
 
 /////////////////////     PAGES HANDLING     ///////////////////////////
 
-void load_page_table( ) {
-
+PageTable *load_page_table( ) {
+  FILE *file = fopen(PAGE_TABLE_FILE, "rb");
+  PageTable *page_table = NULL;
+  fseek(file, 0, SEEK_END);
+  long int file_size = ftell(file);
+  fseek(file, 0, SEEK_SET);
+  fread(page_table, file_size, 1, file);
+  return page_table;
 };
 
 void register_table (  ) {

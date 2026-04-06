@@ -66,10 +66,10 @@ void create_table(Table table){
   // CREATE TABLE FILE WITHIN CONTEXT DB
   if ( fopen(filename, "wx") != 0 ){
       //creat(filename, 0755) ;
-      printf("Table File Created"); 
+      printf("Table File Created\n"); 
   }
   else {
-    perror("Table File Creation");
+    perror("Table File Creation\n");
   };
 
   // STORE TABLE METADATA IN TABLES_FILE (TABLES OF TABLES)

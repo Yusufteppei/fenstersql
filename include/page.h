@@ -5,7 +5,7 @@
 #include <stdint.h>
 #define PAGE_SIZE 4096
 #define BUFFERPOOL_SIZE 1024*1024*1024
-#define MAX_LIVE_PAGE_COUNT BUFFERPOOL_SIZE / PAGE_SIZE
+#define MAX_LIVE_PAGE_COUNT BUFFERPOOL_SIZE / PAGE_SIZE  - 10  //10 is a safe estm8 4now
 
 typedef struct {
   _Atomic int64_t next_oid;
@@ -56,8 +56,10 @@ typedef struct {
 Page;
 
 typedef struct {
-  GlobalControl gc;
+  GlobalControl global_control;
   Page pages[];
 }
 BufferPool;
+extern BufferPool *bufferpool;
 #endif
+

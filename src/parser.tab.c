@@ -551,10 +551,10 @@ static const yytype_int8 yytranslate[] =
 static const yytype_uint8 yyrline[] =
 {
        0,    33,    33,    35,    39,    40,    41,    42,    44,    48,
-      60,    67,    73,    79,    85,    86,    89,    90,    91,    92,
-      95,    96,    97,   101,   102,   105,   106,   107,   110,   110,
-     110,   110,   113,   114,   118,   122,   123,   127,   127,   128,
-     129,   130,   131,   135,   136,   140,   145,   145
+      60,    72,    78,    84,    90,    91,    94,    95,    96,    97,
+     100,   101,   102,   106,   107,   110,   111,   112,   115,   115,
+     115,   115,   118,   119,   123,   127,   128,   132,   132,   133,
+     134,   135,   136,   140,   141,   145,   150,   150
 };
 #endif
 
@@ -1187,38 +1187,43 @@ yyreduce:
   case 10: /* create_table_stmt: CREATE TABLE IDENTIFIER LPAREN column_defs RPAREN SEMICOLON  */
 #line 60 "src/parser.y"
                                                                 {
+      Table t;
+      t.table_oid = use_next_oid();
+      strcpy(t.name, (yyvsp[-4].sval));
+      t.table_type = TABLE_TYPE_USER;
+      create_table(t);
       printf("Table %s created successfully.\n", (yyvsp[-4].sval));
       free((yyvsp[-4].sval));
     }
-#line 1194 "src/parser.tab.c"
+#line 1199 "src/parser.tab.c"
     break;
 
   case 11: /* insert_stmt: INSERT INTO IDENTIFIER VALUES LPAREN records RPAREN SEMICOLON  */
-#line 67 "src/parser.y"
+#line 72 "src/parser.y"
                                                                 {
     printf("INSERT INTO success.\n");
   }
-#line 1202 "src/parser.tab.c"
+#line 1207 "src/parser.tab.c"
     break;
 
   case 12: /* select_stmt: SELECT column_sels FROM joined_table SEMICOLON  */
-#line 73 "src/parser.y"
+#line 78 "src/parser.y"
                                                  {
     printf("SELECT success.\n");
   }
-#line 1210 "src/parser.tab.c"
+#line 1215 "src/parser.tab.c"
     break;
 
   case 13: /* quit_stmt: QUIT  */
-#line 79 "src/parser.y"
+#line 84 "src/parser.y"
        {
     handle_sigint(0);
   }
-#line 1218 "src/parser.tab.c"
+#line 1223 "src/parser.tab.c"
     break;
 
 
-#line 1222 "src/parser.tab.c"
+#line 1227 "src/parser.tab.c"
 
       default: break;
     }
@@ -1411,7 +1416,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 149 "src/parser.y"
+#line 154 "src/parser.y"
 
 
 void yyerror(const char *s) {

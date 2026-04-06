@@ -13,12 +13,15 @@
 extern int yyparse();
 extern void yy_scan_string(const char *);
 
-extern GlobalControl *global_control = NULL;
+extern BufferPool *bufferpool = NULL;
+//extern GlobalControl *global_control = NULL;
 extern Context *ctx = NULL;
+extern PageTable *page_table = NULL;
+
 
 void init(){
     printf("Initializing Database\n");
-    global_control->next_oid = 1; 
+    bufferpool->global_control.next_oid = 1; 
     
     // CREATE SYSTEM TABLES
     create_system_tables();
@@ -29,7 +32,7 @@ void init(){
     FILE *gcf = fopen(GLOBAL_CONTROL_FILE, "wb");
     fseek(gcf, 0, SEEK_SET);
     printf("Writing globalcontrol data \n");
-    fwrite(global_control, sizeof(global_control), 1, gcf);
+    fwrite(&bufferpool->global_control, sizeof(GlobalControl), 1, gcf);
     fclose(gcf);
 };
 
@@ -39,8 +42,8 @@ void load_global_control(){
     FILE *gcf = fopen(GLOBAL_CONTROL_FILE, "rb");
     fseek(gcf, 0, SEEK_SET);
     //printf("Reading globalcontrol data \n");
-    fread(global_control, sizeof(GlobalControl), 1, gcf);
-    printf("Global oid : %d\n", global_control->next_oid);
+    fread(&bufferpool->global_control, sizeof(GlobalControl), 1, gcf);
+    printf("Global oid : %d\n", bufferpool->global_control.next_oid);
     fclose(gcf);
 
 };
@@ -84,7 +87,9 @@ void connect(){
 
 int main() {
     
+    bufferpool = malloc(BUFFERPOOL_SIZE);
     system("figlet 'FENSTERSQL'");
+    fflush(stdout);
     //////////////////////////////////////
     pid_t fenster_pid = getpid();
     create_lock_file();    
@@ -92,8 +97,7 @@ int main() {
     
     ////////////////////////////////////
 
-    BufferPool *bufferpool = malloc(BUFFERPOOL_SIZE);
-    global_control = bufferpool;
+    //global_control = bufferpool;
     ctx = malloc(sizeof(Context));
     //init();
     load_global_control();
@@ -101,8 +105,8 @@ int main() {
     
     ////////////////////////////////////
     
-    Page *pages;
-    pages = bufferpool + sizeof(GlobalControl);
+    //Page *pages;
+    //pages = bufferpool + sizeof(GlobalControl);
     
     ////////////////////////////////////
     printf("pid        : %d\n", getpid()); 
@@ -120,7 +124,8 @@ int main() {
     
     /////////////////////////////////////
 
-    free(pages); free(bufferpool);
+    //free(pages); 
+    free(bufferpool);
     
     return 0;
     }
