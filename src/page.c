@@ -48,7 +48,7 @@ void register_table (  ) {
 Page *get_start_page_from_table_oid ( int64_t table_oid ) {
   // CHECK PAGE TABLE ( FROM MEMORY ) TO FIND PAGE ADDRESS
   PageTableEntry *curr_table_entry;
-  for (long int i=page_table; i<sizeof(table_oid);i+=sizeof(PageTableEntry)){
+  for (long int i=page_table->page_table_entries; i<sizeof(table_oid);i+=sizeof(PageTableEntry)){
     curr_table_entry = i;    
     if ( curr_table_entry->table_oid == table_oid ) {
         
@@ -58,9 +58,21 @@ Page *get_start_page_from_table_oid ( int64_t table_oid ) {
   return NULL;
 };
 
-Page *load_table( int page_id ){
-  // PULL TABLE FROM STORAGE INTO MEMORY; RETURN START PAGE ADDRESS
+void create_page_table_entry ( PageTableEntry page_table_entry){
+
+  PageTableEntry *pte;
+  pte = page_table->page_table_entries + sizeof(PageEntry) * page_table->entry_count ;
+  page_table->entry_count++;
+
+  printf("Page Table Entry Created.\n %64d : %32d \nEntry Count : %32d", page_table->entry_count );
   
+};
+
+
+Page *load_table( int table_oid ){
+  // PULL TABLE FROM STORAGE INTO PAGES, UPDATE PAGE TABLE; RETURN START PAGE ADDRESS
+  
+  // GET 
   return 0;
 }
 

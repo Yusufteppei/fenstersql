@@ -28,11 +28,11 @@ extern GlobalControl *global_control;
 typedef struct {
   int64_t table_oid;
   int32_t page_id;
-  int32_t *page_address;
 }
 PageTableEntry;
 
 typedef struct {
+  int32_t entry_count;
   PageTableEntry *page_table_entries;
 }
 PageTable;
