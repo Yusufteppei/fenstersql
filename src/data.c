@@ -36,7 +36,7 @@ void create_system_tables() {
 ///////////////////////////    TABLES     ///////////////////////////////
 int64_t get_table_oid(Context *context, char *name) {
   // INPUT TABLE NAME AND GET TABLE_OID ELSE RETURNS 1 -  WITHIN CURRENT DB
-  printf("Confirming table doesn't exist\n");
+  //printf("Confirming table doesn't exist\n");
   FILE *tables_file = fopen(TABLES_FILE, "rb");
   fseek(tables_file, 0, SEEK_END);
   long int filesize = ftell(tables_file);
@@ -44,13 +44,13 @@ int64_t get_table_oid(Context *context, char *name) {
   Table t;
   while( ftell(tables_file) < filesize){
     fread(&t, sizeof(Table), 1, tables_file);
-    printf("Table name : %s\n", t.name);
+    //printf("Table name : %s\n", t.name);
     if ( strcmp(t.name, name) == 0 ) {
       fclose(tables_file);
       return t.table_oid;
     }
   }
-  printf("Closing file..\n"); 
+  //printf("Closing file..\n"); 
   fclose(tables_file);
   
   return 1;

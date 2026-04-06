@@ -551,10 +551,10 @@ static const yytype_int8 yytranslate[] =
 static const yytype_uint8 yyrline[] =
 {
        0,    33,    33,    35,    39,    40,    41,    42,    44,    48,
-      60,    72,    78,    84,    90,    91,    94,    95,    96,    97,
-     100,   101,   102,   106,   107,   110,   111,   112,   115,   115,
-     115,   115,   118,   119,   123,   127,   128,   132,   132,   133,
-     134,   135,   136,   140,   141,   145,   150,   150
+      60,    71,    77,    83,    89,    90,    93,    94,    95,    96,
+      99,   100,   101,   105,   106,   109,   110,   111,   114,   114,
+     114,   114,   117,   118,   122,   126,   127,   131,   131,   132,
+     133,   134,   135,   139,   140,   144,   149,   149
 };
 #endif
 
@@ -1192,38 +1192,37 @@ yyreduce:
       strcpy(t.name, (yyvsp[-4].sval));
       t.table_type = TABLE_TYPE_USER;
       create_table(t);
-      printf("Table %s created successfully.\n", (yyvsp[-4].sval));
       free((yyvsp[-4].sval));
     }
-#line 1199 "src/parser.tab.c"
+#line 1198 "src/parser.tab.c"
     break;
 
   case 11: /* insert_stmt: INSERT INTO IDENTIFIER VALUES LPAREN records RPAREN SEMICOLON  */
-#line 72 "src/parser.y"
+#line 71 "src/parser.y"
                                                                 {
     printf("INSERT INTO success.\n");
   }
-#line 1207 "src/parser.tab.c"
+#line 1206 "src/parser.tab.c"
     break;
 
   case 12: /* select_stmt: SELECT column_sels FROM joined_table SEMICOLON  */
-#line 78 "src/parser.y"
+#line 77 "src/parser.y"
                                                  {
     printf("SELECT success.\n");
   }
-#line 1215 "src/parser.tab.c"
+#line 1214 "src/parser.tab.c"
     break;
 
   case 13: /* quit_stmt: QUIT  */
-#line 84 "src/parser.y"
+#line 83 "src/parser.y"
        {
     handle_sigint(0);
   }
-#line 1223 "src/parser.tab.c"
+#line 1222 "src/parser.tab.c"
     break;
 
 
-#line 1227 "src/parser.tab.c"
+#line 1226 "src/parser.tab.c"
 
       default: break;
     }
@@ -1416,7 +1415,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 154 "src/parser.y"
+#line 153 "src/parser.y"
 
 
 void yyerror(const char *s) {

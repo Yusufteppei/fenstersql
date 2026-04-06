@@ -3,7 +3,7 @@
 #define FSTR_MAGIC 0x52545346
  
 #include <stdint.h>
-#define PAGE_SIZE 4096
+#define PAGE_SIZE 128 // 4096  // KEPT TINY FOR DEVELOPMENT
 #define BUFFERPOOL_SIZE 1024*1024*1024
 #define MAX_LIVE_PAGE_COUNT BUFFERPOOL_SIZE / PAGE_SIZE  - 10  //10 is a safe estm8 4now
 
@@ -26,6 +26,7 @@ extern GlobalControl *global_control;
 
 
 typedef struct {
+  int64_t table_oid;
   int32_t page_id;
   int32_t *page_address;
 }
@@ -35,10 +36,11 @@ typedef struct {
   PageTableEntry *page_table_entries;
 }
 PageTable;
+extern PageTable *page_table;
 
 typedef struct {
   int64_t page_id;
-  int64_t table_id;
+  int64_t table_oid;
   int8_t status;
   int8_t flags;
   int32_t empty_start_offset;

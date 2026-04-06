@@ -19,7 +19,6 @@ int64_t peek_next_oid() {
 };
 
 int64_t use_next_oid() {
-  printf("Generating oid");
   return atomic_fetch_add(&bufferpool->global_control.next_oid, 1);
 }
 
@@ -28,6 +27,7 @@ int64_t use_next_oid() {
 
 /////////////////////     PAGES HANDLING     ///////////////////////////
 
+/*
 PageTable *load_page_table( ) {
   FILE *file = fopen(PAGE_TABLE_FILE, "rb");
   PageTable *page_table = NULL;
@@ -37,20 +37,29 @@ PageTable *load_page_table( ) {
   fread(page_table, file_size, 1, file);
   return page_table;
 };
+*/
+
 
 void register_table (  ) {
 
 };
 
 
-Page *get_page_address ( int64_t table_oid ) {
+Page *get_start_page_from_table_oid ( int64_t table_oid ) {
   // CHECK PAGE TABLE ( FROM MEMORY ) TO FIND PAGE ADDRESS
-
-  return 0;
+  PageTableEntry *curr_table_entry;
+  for (long int i=page_table; i<sizeof(table_oid);i+=sizeof(PageTableEntry)){
+    curr_table_entry = i;    
+    if ( curr_table_entry->table_oid == table_oid ) {
+        
+        return bufferpool->pages + (PAGE_SIZE)*(curr_table_entry->page_id);
+    }
+  };
+  return NULL;
 };
 
-Page *load_page( int page_id ){
-  // PULL PAGE FROM STORAGE INTO MEMORY; RETURN PAGE ADDRESS
+Page *load_table( int page_id ){
+  // PULL TABLE FROM STORAGE INTO MEMORY; RETURN START PAGE ADDRESS
   
   return 0;
 }

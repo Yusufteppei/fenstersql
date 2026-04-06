@@ -107,9 +107,8 @@ int main() {
     
     ////////////////////////////////////
     
-    //Page *pages;
-    //pages = bufferpool + sizeof(GlobalControl);
-    
+    page_table = malloc(4*1024); // 4KB PAGE TABLE
+
     ////////////////////////////////////
     printf("pid        : %d\n", getpid()); 
     
