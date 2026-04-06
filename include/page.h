@@ -7,6 +7,17 @@
 #define BUFFERPOOL_SIZE 1024*1024*1024
 #define MAX_LIVE_PAGE_COUNT BUFFERPOOL_SIZE / PAGE_SIZE  - 10  //10 is a safe estm8 4now
 
+
+#define PAGE_STATUS_FREE    (1 << 0)
+#define PAGE_STATUS_OCCUPIED (1 << 1)
+#define PAGE_STATUS_LOADING (1 << 2)
+
+#define FLAG_CLEAN   (1 << 0)
+#define FLAG_DIRTY   (1 << 1)
+#define FLAG_IO_BUSY (1 << 2)
+#define FLAG_LOCKED (1 << 3)
+
+
 typedef struct {
   _Atomic int64_t next_oid;
 }
@@ -28,6 +39,8 @@ PageTable;
 typedef struct {
   int64_t page_id;
   int64_t table_id;
+  int8_t status;
+  int8_t flags;
   int32_t empty_start_offset;
   int32_t empty_end_offset; // 4 BYTES(DIGITS) SINCE PAGES ARE 4096 BYTES(4 DIGITS)
 }

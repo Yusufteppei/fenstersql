@@ -34,14 +34,34 @@ void create_system_tables() {
 ///////////////////////////////////////////////////////////////////////
 
 ///////////////////////////    TABLES     ///////////////////////////////
-/*
-  1. Get OID
-  2. If it's a metadata table, 
-*/
+int64_t get_table_oid(Context *context, char *name) {
+  // INPUT TABLE NAME AND GET TABLE_OID ELSE RETURNS 1 -  WITHIN CURRENT DB
+  printf("Confirming table doesn't exist\n");
+  FILE *tables_file = fopen(TABLES_FILE, "rb");
+  fseek(tables_file, 0, SEEK_END);
+  long int filesize = ftell(tables_file);
+  fseek(tables_file, 0, SEEK_SET);
+  Table t;
+  while( ftell(tables_file) < filesize){
+    fread(&t, sizeof(Table), 1, tables_file);
+    printf("Table name : %s\n", t.name);
+    if ( strcmp(t.name, name) == 0 ) {
+      fclose(tables_file);
+      return t.table_oid;
+    }
+  }
+  printf("Closing file..\n"); 
+  fclose(tables_file);
+  
+  return 1;
+}
 
-
-void create_table(Table table){
-
+void create_table(Context *context, Table table){
+  // CHECK TABLE NAME EXISTENCE IN DATABASE
+  if ( get_table_oid(ctx, table.name) != 1 ) {
+    printf("Table %s already exists.\n", table.name);
+    return;
+  };
   char oid_string[12]; 
   char database_oid_string[12];
   char directory_name[64] = DATABASES_BASE_DIR;
@@ -61,7 +81,6 @@ void create_table(Table table){
   strcat(&filename, oid_string);
   
   printf("Table File %s\n", filename);
-  // CREATE COLUMNS
 
   // CREATE TABLE FILE WITHIN CONTEXT DB
   if ( fopen(filename, "wx") != 0 ){
@@ -78,13 +97,10 @@ void create_table(Table table){
   fwrite(&table, sizeof(Table), 1, tables_file );
 
   fclose(tables_file);
-  
 
+  // CREATE COLUMNS
   
 };
-
-
-
 
 
 /////////////////////////    END TABLES     //////////////////////////////
@@ -135,4 +151,3 @@ int create_database( Database database ) {
 };
 
 //////////////////////////    END DATABASES        //////////////////////
-

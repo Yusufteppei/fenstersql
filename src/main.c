@@ -48,6 +48,8 @@ void load_global_control(){
 
 };
 
+void load_metadata_into_memory(){};
+
 void create_lock_file() {
     FILE *f = fopen(LOCK_FILE, "wx"); // 'x' means fail if file already exists
     if (!f) {

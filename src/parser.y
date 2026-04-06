@@ -63,7 +63,6 @@ create_table_stmt:
       strcpy(t.name, $3);
       t.table_type = TABLE_TYPE_USER;
       create_table(t);
-      printf("Table %s created successfully.\n", $3);
       free($3);
     }
     ;
