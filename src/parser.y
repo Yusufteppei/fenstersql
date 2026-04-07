@@ -5,6 +5,7 @@
 #include "signals.h"
 #include <signal.h>
 #include "data.h"
+#include "connection.h"
 
 
 /* Prototypes to keep the compiler happy */
@@ -16,6 +17,9 @@ int yylex();
 %union {
     int ival;
     char *sval;
+    struct TempCol* col;
+    struct Column* column;
+    struct DataType* dtype;
 }
 
 /* Define tokens and associate IDENTIFIER with sval */
@@ -27,6 +31,9 @@ int yylex();
 %token <sval> IDENTIFIER STRING_LITERAL
 %token <ival> INT_LITERAL
 
+%type <column> column_defs
+%type <column> column_def
+%type <dtype> data_type
 %%
 
 /* The entry point: allows for multiple statements */
@@ -60,9 +67,28 @@ create_table_stmt:
     CREATE TABLE IDENTIFIER LPAREN column_defs RPAREN SEMICOLON {
       Table t;
       t.table_oid = use_next_oid();
-      strcpy(t.name, $3);
       t.table_type = TABLE_TYPE_USER;
-      create_table(t);
+      create_table(ctx, t);
+
+      TempCol* curr = $5;
+      int i = 0;
+      while (curr != NULL) {
+        Column col;
+        col.column_oid = use_next_oid();
+        col.table_oid = t.table_oid;
+        strcpy(col.column_name, curr->data.column_name);
+        col.column_order = i++;
+        col.data_type = curr->data.data_type;
+        printf("Data Type: %s\nCol Name: %s\n ", col.data_type.name, col.column_name);
+        printf("Curr : Data Type: %s\nCol Name: %s\n ", curr->data.data_type.name, curr->data.column_name);
+        create_column(col);
+        printf("Create column function complete\n");
+        // Clean up as you go or after
+        Column* temp = curr;
+        curr = curr->next;
+        //free(temp->column_name);
+        free(temp);
+      }
       free($3);
     }
     ;
@@ -136,14 +162,32 @@ value:
     ;
 
 column_defs:
-    column_def
+    column_def 
+    {
+      $$ = $1;
+    }
     | column_defs COMMA column_def
+    {
+      TempCol* current = $1;
+      while(current->next != NULL) current = current->next;
+      current->next = $3;
+      $$ = $1;
+    }
     ;
 
 column_def:
-    IDENTIFIER data_type
+    IDENTIFIER data_type 
+    {
+        TempCol* node = malloc(sizeof(TempCol));
+        memset(&node->data, 0, sizeof(Column));
+        
+        strncpy(node->data.column_name, $1, 31);
+        strcpy(node->data.data_type.name, "int");//$2, 31);
+        node->data.data_type.max_size = 32;
+        node->next = NULL;
+        $$ = node;
+    }
     ;
-
 
 data_type:
     TYPE_INT | TYPE_STRING

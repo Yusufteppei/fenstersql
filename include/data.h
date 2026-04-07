@@ -15,21 +15,31 @@
 #define DATABASES_FILE "data/sys/fstr_database"
 #define DATABASES_BASE_DIR "data/base/"
 #define PAGES_FILE "data/sys/fstr_pages"
-#define PAGE_TABLE_FILE "data/sys/fstr_pagetable"
 #define GLOBAL_CONTROL_FILE "data/sys/fstr_global"
 
 #include <stdint.h>
 #include <errno.h>
 #include <stdatomic.h>
+#include "connection.h"
 
 // Built to Support Variable Sizes for Efficient Memory Usage
 
+typedef int64_t number;
+
+typedef char string[32];
 
 typedef enum {
   TABLE_TYPE_METADATA,
   TABLE_TYPE_USER
 }
 TableType;
+
+
+typedef struct {
+  char name[32];
+  int64_t max_size;
+}
+DataType;
 
 
 typedef struct {
@@ -49,12 +59,30 @@ Table;
 
 
 typedef struct {
-  int64_t column_oid;
   int64_t table_oid;
+  int64_t column_oid;
   char column_name[32];
-  int64_t max_size;
+  int32_t column_order;
+  DataType data_type;
+  int64_t next_column_oid; //WITHIN THE SAME TABLE
+  //struct Column *next;
 }
 Column;
+
+
+typedef struct {
+  int64_t table_oid;
+  int32_t column_count;
+  Column *columns;
+}
+TableMetadata;
+extern TableMetadata *tables_metadata;
+
+typedef struct TempCol {
+    Column data;
+    struct TempCol *next;
+} TempCol;
+
 
 typedef struct {
   int64_t tuple_oid;
@@ -63,20 +91,33 @@ typedef struct {
 }
 Tuple;
 
+
 // PERHAPS THERE'S NOTHING LIKE COLUMN
 typedef struct {
-  int64_t column_oid; // int64_t where the top32=table_id and btm32=col_id for unique
+  int64_t column_oid; 
   char column_name[32];
   char *value;
 }
 Attribute;
 
-typedef int64_t number;
 
-typedef char string[32];
+typedef struct {
+  int64_t oid;
+  Tuple *tuples;
+}
+LoadedTable;
 
-void select_object( char* object ) ;
 
-void create_object( char* object, char value[32]) ;
+void create_table_of_tables ();
+
+void create_table_of_dbs ();
+
+int64_t get_table_oid( Context *context, char *name);
+
+void create_table( Context *context, Table table);
+
+int database_exists( char *database_name );
+
+int create_database( Database database );
 
 #endif

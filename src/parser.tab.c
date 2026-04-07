@@ -75,13 +75,14 @@
 #include "signals.h"
 #include <signal.h>
 #include "data.h"
+#include "connection.h"
 
 
 /* Prototypes to keep the compiler happy */
 void yyerror(const char *s);
 int yylex();
 
-#line 85 "src/parser.tab.c"
+#line 86 "src/parser.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -550,11 +551,11 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    33,    33,    35,    39,    40,    41,    42,    44,    48,
-      60,    71,    77,    83,    89,    90,    93,    94,    95,    96,
-      99,   100,   101,   105,   106,   109,   110,   111,   114,   114,
-     114,   114,   117,   118,   122,   126,   127,   131,   131,   132,
-     133,   134,   135,   139,   140,   144,   149,   149
+       0,    40,    40,    42,    46,    47,    48,    49,    51,    55,
+      67,    97,   103,   109,   115,   116,   119,   120,   121,   122,
+     125,   126,   127,   131,   132,   135,   136,   137,   140,   140,
+     140,   140,   143,   144,   148,   152,   153,   157,   157,   158,
+     159,   160,   161,   165,   169,   179,   193,   193
 };
 #endif
 
@@ -1171,7 +1172,7 @@ yyreduce:
   switch (yyn)
     {
   case 9: /* create_db_stmt: CREATE DATABASE IDENTIFIER SEMICOLON  */
-#line 48 "src/parser.y"
+#line 55 "src/parser.y"
                                          {
         Database d;
         d.database_oid = use_next_oid();
@@ -1181,48 +1182,101 @@ yyreduce:
         free((yyvsp[-1].sval)); // Clean up the strdup memory
         return 0;
     }
-#line 1185 "src/parser.tab.c"
+#line 1186 "src/parser.tab.c"
     break;
 
   case 10: /* create_table_stmt: CREATE TABLE IDENTIFIER LPAREN column_defs RPAREN SEMICOLON  */
-#line 60 "src/parser.y"
+#line 67 "src/parser.y"
                                                                 {
       Table t;
       t.table_oid = use_next_oid();
-      strcpy(t.name, (yyvsp[-4].sval));
       t.table_type = TABLE_TYPE_USER;
-      create_table(t);
+      create_table(ctx, t);
+
+      TempCol* curr = (yyvsp[-2].column);
+      int i = 0;
+      while (curr != NULL) {
+        Column col;
+        col.column_oid = use_next_oid();
+        col.table_oid = t.table_oid;
+        strcpy(col.column_name, curr->data.column_name);
+        col.column_order = i++;
+        col.data_type = curr->data.data_type;
+        printf("Data Type: %s\nCol Name: %s\n ", col.data_type.name, col.column_name);
+        printf("Curr : Data Type: %s\nCol Name: %s\n ", curr->data.data_type.name, curr->data.column_name);
+        create_column(col);
+        printf("Create column function complete\n");
+        // Clean up as you go or after
+        Column* temp = curr;
+        curr = curr->next;
+        //free(temp->column_name);
+        free(temp);
+      }
       free((yyvsp[-4].sval));
     }
-#line 1198 "src/parser.tab.c"
+#line 1218 "src/parser.tab.c"
     break;
 
   case 11: /* insert_stmt: INSERT INTO IDENTIFIER VALUES LPAREN records RPAREN SEMICOLON  */
-#line 71 "src/parser.y"
+#line 97 "src/parser.y"
                                                                 {
     printf("INSERT INTO success.\n");
   }
-#line 1206 "src/parser.tab.c"
+#line 1226 "src/parser.tab.c"
     break;
 
   case 12: /* select_stmt: SELECT column_sels FROM joined_table SEMICOLON  */
-#line 77 "src/parser.y"
+#line 103 "src/parser.y"
                                                  {
     printf("SELECT success.\n");
   }
-#line 1214 "src/parser.tab.c"
+#line 1234 "src/parser.tab.c"
     break;
 
   case 13: /* quit_stmt: QUIT  */
-#line 83 "src/parser.y"
+#line 109 "src/parser.y"
        {
     handle_sigint(0);
   }
-#line 1222 "src/parser.tab.c"
+#line 1242 "src/parser.tab.c"
+    break;
+
+  case 43: /* column_defs: column_def  */
+#line 166 "src/parser.y"
+    {
+      (yyval.column) = (yyvsp[0].column);
+    }
+#line 1250 "src/parser.tab.c"
+    break;
+
+  case 44: /* column_defs: column_defs COMMA column_def  */
+#line 170 "src/parser.y"
+    {
+      TempCol* current = (yyvsp[-2].column);
+      while(current->next != NULL) current = current->next;
+      current->next = (yyvsp[0].column);
+      (yyval.column) = (yyvsp[-2].column);
+    }
+#line 1261 "src/parser.tab.c"
+    break;
+
+  case 45: /* column_def: IDENTIFIER data_type  */
+#line 180 "src/parser.y"
+    {
+        TempCol* node = malloc(sizeof(TempCol));
+        memset(&node->data, 0, sizeof(Column));
+        
+        strncpy(node->data.column_name, (yyvsp[-1].sval), 31);
+        strcpy(node->data.data_type.name, "int");//$2, 31);
+        node->data.data_type.max_size = 32;
+        node->next = NULL;
+        (yyval.column) = node;
+    }
+#line 1276 "src/parser.tab.c"
     break;
 
 
-#line 1226 "src/parser.tab.c"
+#line 1280 "src/parser.tab.c"
 
       default: break;
     }
@@ -1415,7 +1469,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 153 "src/parser.y"
+#line 197 "src/parser.y"
 
 
 void yyerror(const char *s) {

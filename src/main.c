@@ -14,10 +14,10 @@ extern int yyparse();
 extern void yy_scan_string(const char *);
 
 extern BufferPool *bufferpool = NULL;
-//extern GlobalControl *global_control = NULL;
 extern Context *ctx = NULL;
 extern PageTable *page_table = NULL;
-
+//extern Column *columns = NULL;
+extern TableMetadata *tables_metadata = NULL;
 
 void init(){
     printf("Initializing Database\n");
@@ -31,7 +31,7 @@ void init(){
     // WRITE INITIAL GLOBAL CONTROL DATA INTO FILE
     FILE *gcf = fopen(GLOBAL_CONTROL_FILE, "wb");
     fseek(gcf, 0, SEEK_SET);
-    printf("Writing globalcontrol data \n");
+    printf("Writing Global Control Data \n");
     fwrite(&bufferpool->global_control, sizeof(GlobalControl), 1, gcf);
     fclose(gcf);
 };
@@ -41,9 +41,7 @@ void load_global_control(){
     // LOAD GLOBAL CONTROL DATA INTO MEMORY
     FILE *gcf = fopen(GLOBAL_CONTROL_FILE, "rb");
     fseek(gcf, 0, SEEK_SET);
-    //printf("Reading globalcontrol data \n");
     fread(&bufferpool->global_control, sizeof(GlobalControl), 1, gcf);
-    printf("Global oid : %d\n", bufferpool->global_control.next_oid);
     fclose(gcf);
 
 };
@@ -59,7 +57,6 @@ void create_lock_file() {
         int pid = 0;
         fseek(fp, 0, SEEK_SET);
         fscanf(fp, "%d", &pid); 
-        //printf("pid : %d\n", pid);
         fclose(fp);
         if (kill(pid, 0) == 0 ) {        
           // PROCESS IS ALIVE 
@@ -84,49 +81,57 @@ void connect(){
   ctx->database_oid = 1;
   ctx->user_oid = 9999;
   
-  printf("Context    : %d\n", ctx->database_oid);
 };
 
 int main() {
     
+    //////////////     ALLOCATE MEMORY   //////////////////////
     bufferpool = malloc(BUFFERPOOL_SIZE);
-    system("figlet 'FENSTERSQL'");
-    fflush(stdout);
-    //////////////////////////////////////
-    pid_t fenster_pid = getpid();
+    page_table = malloc(4*1024); // 4KB PAGE TABLE
+    tables_metadata = malloc(16*1024); //16B PER METADATA
+    ctx = malloc(sizeof(Context));
+
+    //////////////////////////////////////////////////////////
+    
+    //////////////   LOAD GLOBAL STATES  /////////////////////
     create_lock_file();    
     signal(SIGINT, handle_sigint);
-    
-    ////////////////////////////////////
-
-    //global_control = bufferpool;
-    ctx = malloc(sizeof(Context));
     //init();
     load_global_control();
     connect();
     
-    ////////////////////////////////////
-    
-    page_table = malloc(4*1024); // 4KB PAGE TABLE
+    //////////////////////////////////////////////////////////
 
-    ////////////////////////////////////
-    printf("pid        : %d\n", getpid()); 
+    //////////////     INTRO OUTPUT       ////////////////////
+    system("figlet 'FENSTERSQL'");
+    fflush(stdout);
     
+    printf("Process ID      : %d\n", getpid());     
+    printf("Context         : %d\n", ctx->database_oid);
+    printf("Next Global OID : %d\n", bufferpool->global_control.next_oid);
     printf("\n\n\n");
+
+    /////////////////////////////////////////////////////////
+
+    //////////////      INPUT PARSING     //////////////////////
     char *line;
     while ((line = readline("fenstersql# ")) != NULL) {
         if (*line) {
-            add_history(line);      // Adds to arrow-key history
-            yy_scan_string(line);   // Sends the line to Flex/Bison
+            add_history(line);      
+            yy_scan_string(line);   
             yyparse();
         }
         free(line);
     }
-    
-    /////////////////////////////////////
 
-    //free(pages); 
+    //////////////////////////////////////////////////////////
+    
+    ///////////////     FREE MEMORY     //////////////////////
     free(bufferpool);
     free(page_table);    
+    free(tables_metadata);
+
+    /////////////////////////////////////////////////////////
+
     return 0;
     }

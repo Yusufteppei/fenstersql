@@ -11,6 +11,55 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+///////////////////////////    COLUMNS         /////////////////////////
+void create_column(Column *column) {
+  // EMPTY NEXT POINTER
+  //column.next = NULL;
+  //Column col;
+  // WRITE TO COLUMNS FILE
+
+  printf("Create column function started\n");
+  FILE *columns_file = fopen(COLUMNS_FILE, "wb");
+  fseek(columns_file, 0, SEEK_END);
+
+  printf("Writing to columns file\n");
+  fwrite(column, sizeof(Column), 1, columns_file);
+  printf("Write to columns file complete\n");
+  fclose(columns_file);
+
+  // UPDATE TABLE COLUMNS ON MEMORY
+
+
+};
+
+int load_columns(int64_t table_oid) {
+  //  CHECK IF IT'S ALREADY LOADED - SEQUENTIAL FOR NOW
+  for (TableMetadata *i=tables_metadata; i->table_oid != NULL; i+=sizeof(tables_metadata)) {
+    if ( i->table_oid == table_oid ) {
+      printf("Table Metadata Already Loaded\n");
+      return 1;
+    }
+  }
+
+  //
+  Column col;
+  FILE *columns_file = fopen(COLUMNS_FILE, "rb");
+  fseek(columns_file, 0, SEEK_END);
+  long int filesize = ftell(columns_file);
+  fseek(columns_file, 0, SEEK_SET);
+
+  for (int i=0; i<filesize; i+=sizeof(Column)) {
+    fread(&col, sizeof(col), 1, columns_file);
+    if ( col.table_oid == table_oid ) {
+      fread((tables_metadata + i*(sizeof(TableMetadata)))->columns, sizeof(filesize), 1, columns_file);
+    };
+  };
+
+  fclose(columns_file);
+  return 0;
+}
+
+///////////////////////////////////////////////////////////////////////
 
 ///////////////////////////    SYSTEM TABLES   /////////////////////////
 void create_table_of_dbs(){
@@ -88,7 +137,7 @@ void create_table(Context *context, Table table){
       printf("Table File Created\n"); 
   }
   else {
-    perror("Table File Creation\n");
+    perror("Table File Creation");
   };
 
   // STORE TABLE METADATA IN TABLES_FILE (TABLES OF TABLES)
@@ -96,6 +145,7 @@ void create_table(Context *context, Table table){
 
   fwrite(&table, sizeof(Table), 1, tables_file );
 
+  printf("Metadata written to tables file\n");
   fclose(tables_file);
 
   // CREATE COLUMNS
@@ -131,9 +181,13 @@ int database_exists( char *database_name ) {
 
 
 int create_database( Database database ) {
+      if ( database_exists(database.name) ){
+        printf("Database Exists\n");
+        return 1;
+      }
 
       char oid_string[12]; 
-
+      // CREATE FOLDER
       snprintf(oid_string, sizeof(oid_string), "%d", database.database_oid);
       printf("OID is %d\n", database.database_oid);
       database.created_at=0;
@@ -148,6 +202,7 @@ int create_database( Database database ) {
         perror("Error\n");
       }; 
 
+      // UPDATE DATABASES FILE
 };
 
 //////////////////////////    END DATABASES        //////////////////////

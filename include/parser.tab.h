@@ -91,12 +91,15 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 16 "src/parser.y"
+#line 17 "src/parser.y"
 
     int ival;
     char *sval;
+    struct TempCol* col;
+    struct Column* column;
+    struct DataType* dtype;
 
-#line 100 "src/parser.tab.h"
+#line 103 "src/parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

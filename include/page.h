@@ -3,6 +3,11 @@
 #define FSTR_MAGIC 0x52545346
  
 #include <stdint.h>
+#include "connection.h"
+#include "data.h"
+
+
+
 #define PAGE_SIZE 128 // 4096  // KEPT TINY FOR DEVELOPMENT
 #define BUFFERPOOL_SIZE 1024*1024*1024
 #define MAX_LIVE_PAGE_COUNT BUFFERPOOL_SIZE / PAGE_SIZE  - 10  //10 is a safe estm8 4now
@@ -76,5 +81,19 @@ typedef struct {
 }
 BufferPool;
 extern BufferPool *bufferpool;
+
+int64_t peek_next_oid();
+
+int64_t use_next_oid();
+
+Page *get_start_page_from_table_oid ( int64_t table_oid );
+
+void create_page_table_entry ( PageTableEntry page_table_entry);
+
+Page *load_table( Context *context, int table_oid );
+
+Tuple *read_tuple ( int page_id, int32_t offset );
+
+Tuple *write_tuple ();
 #endif
 
