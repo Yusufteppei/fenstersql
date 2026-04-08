@@ -46,8 +46,6 @@ void load_global_control(){
 
 };
 
-void load_metadata_into_memory(){};
-
 void create_lock_file() {
     FILE *f = fopen(LOCK_FILE, "wx"); // 'x' means fail if file already exists
     if (!f) {
@@ -90,7 +88,7 @@ int main() {
     page_table = malloc(4*1024); // 4KB PAGE TABLE
     tables_metadata = malloc(16*1024); //16B PER METADATA
     ctx = malloc(sizeof(Context));
-
+    
     //////////////////////////////////////////////////////////
     
     //////////////   LOAD GLOBAL STATES  /////////////////////
@@ -98,6 +96,7 @@ int main() {
     signal(SIGINT, handle_sigint);
     //init();
     load_global_control();
+    load_tables_metadata();
     connect();
     
     //////////////////////////////////////////////////////////
@@ -106,6 +105,8 @@ int main() {
     system("figlet 'FENSTERSQL'");
     fflush(stdout);
     
+    printf("Column Count    : %d\n", tables_metadata[2].column_count);
+    //printf("Column 1        : %d\n", tables_metadata->columns[0].column_oid);
     printf("Process ID      : %d\n", getpid());     
     printf("Context         : %d\n", ctx->database_oid);
     printf("Next Global OID : %d\n", bufferpool->global_control.next_oid);

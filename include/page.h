@@ -32,13 +32,14 @@ extern GlobalControl *global_control;
 
 typedef struct {
   int64_t table_oid;
+  TableMetadata *metadata;
   int32_t page_id;
 }
 PageTableEntry;
 
 typedef struct {
-  int32_t entry_count;
   PageTableEntry *page_table_entries;
+  int32_t entry_count;
 }
 PageTable;
 extern PageTable *page_table;

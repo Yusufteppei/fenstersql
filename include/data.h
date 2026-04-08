@@ -11,6 +11,7 @@
 #endif
 
 #define TABLES_FILE "data/sys/fstr_table"
+#define TABLES_METADATA_FILE "data/sys/fstr_tables_metadata"
 #define COLUMNS_FILE "data/sys/fstr_column"
 #define DATABASES_FILE "data/sys/fstr_database"
 #define DATABASES_BASE_DIR "data/base/"
@@ -21,12 +22,20 @@
 #include <errno.h>
 #include <stdatomic.h>
 #include "connection.h"
+#include "parser.tab.h"
 
 // Built to Support Variable Sizes for Efficient Memory Usage
 
-typedef int64_t number;
+/*
+typedef int64_t NUMBER;
 
-typedef char string[32];
+typedef char STRING[32];
+typedef enum {
+  TYPE_INT,
+  TYPE_STRING
+}
+DataType;
+*/
 
 typedef enum {
   TABLE_TYPE_METADATA,
@@ -34,10 +43,9 @@ typedef enum {
 }
 TableType;
 
-
-typedef struct {
-  char name[32];
-  int64_t max_size;
+typedef enum {
+  DTYPE_INT,
+  DTYPE_STRING
 }
 DataType;
 
@@ -65,7 +73,6 @@ typedef struct {
   int32_t column_order;
   DataType data_type;
   int64_t next_column_oid; //WITHIN THE SAME TABLE
-  //struct Column *next;
 }
 Column;
 
@@ -78,6 +85,8 @@ typedef struct {
 TableMetadata;
 extern TableMetadata *tables_metadata;
 
+
+// FOR THE BISON PARSING RECURSION
 typedef struct TempCol {
     Column data;
     struct TempCol *next;
@@ -120,4 +129,5 @@ int database_exists( char *database_name );
 
 int create_database( Database database );
 
+TableMetadata *get_metadata_from_table_oid( int64_t table_oid);
 #endif

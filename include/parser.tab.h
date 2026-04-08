@@ -77,11 +77,11 @@ extern int yydebug;
     EQUAL = 278,                   /* EQUAL  */
     OPERATOR = 279,                /* OPERATOR  */
     ASTERISK = 280,                /* ASTERISK  */
-    TYPE_STRING = 281,             /* TYPE_STRING  */
-    TYPE_INT = 282,                /* TYPE_INT  */
-    QUIT = 283,                    /* QUIT  */
-    IDENTIFIER = 284,              /* IDENTIFIER  */
-    STRING_LITERAL = 285,          /* STRING_LITERAL  */
+    QUIT = 281,                    /* QUIT  */
+    IDENTIFIER = 282,              /* IDENTIFIER  */
+    STRING_LITERAL = 283,          /* STRING_LITERAL  */
+    TYPE_INT = 284,                /* TYPE_INT  */
+    TYPE_STRING = 285,             /* TYPE_STRING  */
     INT_LITERAL = 286              /* INT_LITERAL  */
   };
   typedef enum yytokentype yytoken_kind_t;
@@ -97,9 +97,10 @@ union YYSTYPE
     char *sval;
     struct TempCol* col;
     struct Column* column;
-    struct DataType* dtype;
+    int dtype;
+    struct Table* table_data;
 
-#line 103 "src/parser.tab.h"
+#line 104 "src/parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
