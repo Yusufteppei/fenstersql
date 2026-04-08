@@ -19,19 +19,20 @@ int yylex();
     char *sval;
     struct TempCol* col;
     struct Column* column;
-    struct DataType* dtype;
+    int dtype;
+    struct Table* table_data;
 }
 
 /* Define tokens and associate IDENTIFIER with sval */
 %token CREATE SELECT INSERT INTO TABLE DATABASE VALUES FROM
 %token RIGHT LEFT INNER OUTER JOIN ON AS
 %token SEMICOLON DOT COMMA RPAREN LPAREN EQUAL OPERATOR ASTERISK
-%token TYPE_STRING TYPE_INT
 %token QUIT
-%token <sval> IDENTIFIER STRING_LITERAL
+%token <sval> IDENTIFIER STRING_LITERAL TYPE_INT TYPE_STRING
 %token <ival> INT_LITERAL
 
 %type <column> column_defs
+%type <table_data> joined_table
 %type <column> column_def
 %type <dtype> data_type
 %%
@@ -68,6 +69,7 @@ create_table_stmt:
       Table t;
       t.table_oid = use_next_oid();
       t.table_type = TABLE_TYPE_USER;
+      strcpy(t.name, $3);
       create_table(ctx, t);
 
       TempCol* curr = $5;
@@ -79,10 +81,10 @@ create_table_stmt:
         strcpy(col.column_name, curr->data.column_name);
         col.column_order = i++;
         col.data_type = curr->data.data_type;
-        printf("Data Type: %s\nCol Name: %s\n ", col.data_type.name, col.column_name);
-        printf("Curr : Data Type: %s\nCol Name: %s\n ", curr->data.data_type.name, curr->data.column_name);
+        //printf("Data Type: %s\nCol Name: %s\n ", col.data_type, col.column_name);
+        //printf("Curr : Data Type: %s\nCol Name: %s\n ", curr->data.data_type, curr->data.column_name);
         create_column(col);
-        printf("Create column function complete\n");
+        printf("Create column %s %d function complete\n", col.column_name, col.column_oid);
         // Clean up as you go or after
         Column* temp = curr;
         curr = curr->next;
@@ -101,7 +103,13 @@ insert_stmt:
 
 select_stmt:
   SELECT column_sels FROM joined_table SEMICOLON {
-    printf("SELECT success.\n");
+    printf("Planning...\n");
+    //plan();
+    printf("Optimizing...\n");
+    //execute();
+    int64_t table_oid = get_table_oid(ctx, $4);;
+    
+    output_table_columns(table_oid);
   }
   ;
 
@@ -178,19 +186,20 @@ column_defs:
 column_def:
     IDENTIFIER data_type 
     {
+        //printf("ID: %s dtype: %s\n", $1, $2);
         TempCol* node = malloc(sizeof(TempCol));
         memset(&node->data, 0, sizeof(Column));
         
         strncpy(node->data.column_name, $1, 31);
-        strcpy(node->data.data_type.name, "int");//$2, 31);
-        node->data.data_type.max_size = 32;
+        node->data.data_type = $2;
         node->next = NULL;
         $$ = node;
     }
     ;
 
 data_type:
-    TYPE_INT | TYPE_STRING
+    TYPE_INT { $$ = DTYPE_INT; }
+    | TYPE_STRING { $$ = DTYPE_STRING; }
     ;
 
     
