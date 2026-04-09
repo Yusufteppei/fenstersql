@@ -22,10 +22,20 @@
 #include <errno.h>
 #include <stdatomic.h>
 #include "connection.h"
-#include "parser.tab.h"
+#include "parser/parser.tab.h"
 
 // Built to Support Variable Sizes for Efficient Memory Usage
 
+/*
+typedef int64_t NUMBER;
+
+typedef char STRING[32];
+typedef enum {
+  TYPE_INT,
+  TYPE_STRING
+}
+DataType;
+*/
 
 typedef enum {
   TABLE_TYPE_METADATA,
@@ -99,7 +109,25 @@ typedef struct {
 }
 Attribute;
 
+typedef enum {
+    REF_PHYSICAL_TABLE,
+    REF_JOIN
+} RefType;
 
+typedef struct TableRef {
+    RefType type;
+    char* table_name;   // The name Bison just found
+    char* alias;        // For when you add "AS u"
+    struct TableRef* left;  // NULL for now
+    struct TableRef* right; // NULL for now
+} TableRef;
+/*
+typedef struct {
+  int64_t oid;
+  Tuple *tuples;
+}
+LoadedTable;
+*/
 
 void create_table_of_tables ();
 

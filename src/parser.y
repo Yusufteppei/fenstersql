@@ -6,6 +6,7 @@
 #include <signal.h>
 #include "data.h"
 #include "connection.h"
+#include "planner.h"
 
 
 /* Prototypes to keep the compiler happy */
@@ -21,6 +22,7 @@ int yylex();
     struct Column* column;
     int dtype;
     struct Table* table_data;
+    struct PlannerNode* planner_node;
 }
 
 /* Define tokens and associate IDENTIFIER with sval */
@@ -31,8 +33,8 @@ int yylex();
 %token <sval> IDENTIFIER STRING_LITERAL TYPE_INT TYPE_STRING
 %token <ival> INT_LITERAL
 
+%type <planner_node> select_stmt joined_table column_sels
 %type <column> column_defs
-%type <table_data> joined_table
 %type <column> column_def
 %type <dtype> data_type
 %%
@@ -104,7 +106,8 @@ insert_stmt:
 select_stmt:
   SELECT column_sels FROM joined_table SEMICOLON {
     printf("Planning...\n");
-    //plan();
+    $$ = create_planner_node(PLANNER_NODE_SELECT, $2, $4);
+
     printf("Optimizing...\n");
     //execute();
     int64_t table_oid = get_table_oid(ctx, $4);;
@@ -130,7 +133,13 @@ column_sel:
   | IDENTIFIER DOT IDENTIFIER
 
 joined_table:
-  IDENTIFIER
+  IDENTIFIER 
+  {
+        // Promote a simple string into a tree node
+        PlannerNode* table = create_planner_node(PLANNER_NODE_TABLE_REF, NULL, NULL);
+        table->data.sval = $1;
+        $$ = table;
+  }
   | joined_table join_command IDENTIFIER ON join_predicate
   | joined_table join_command IDENTIFIER AS IDENTIFIER ON join_predicate
   ;
