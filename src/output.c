@@ -15,8 +15,9 @@ void output_table_columns(int64_t table_oid){
     TableMetadata *metadata = get_metadata_from_table_oid(table_oid);
     
     for ( int i=0; i<metadata->column_count; i++){
-       printf("COl %s \n", metadata->columns[i].column_name);
+       printf("    %s    |", metadata->columns[i].column_name);
      }
+     printf("\n");
 };
 
 
