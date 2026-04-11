@@ -9,7 +9,10 @@ union{
 
 
 void output_table_columns(int64_t table_oid){
-    printf("Output columns for table %d\n", table_oid);
+    if (!table_oid) {
+      printf("Table doesn't exist\n");
+      return;
+    };
     Column *columns;
     int32_t column_count;
     TableMetadata *metadata = get_metadata_from_table_oid(table_oid);
@@ -17,7 +20,7 @@ void output_table_columns(int64_t table_oid){
     for ( int i=0; i<metadata->column_count; i++){
        printf("    %s    |", metadata->columns[i].column_name);
      }
-     printf("\n");
+     printf("\n\n");
 };
 
 
