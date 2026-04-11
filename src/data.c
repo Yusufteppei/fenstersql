@@ -13,6 +13,15 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+///////////////////////////    TUPLES          /////////////////////////
+
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////
+
 ///////////////////////////    COLUMNS         /////////////////////////
 void create_column(Column column) {
   // EMPTY NEXT POINTER
@@ -45,6 +54,8 @@ void create_column(Column column) {
 
 };
 
+//////////////////////////////
+//
 //INEFFICIENT - LATER A HASHTABLE THAT CONTAINS A POINTER TO THE COLUMNS LIST
 int load_columns(int64_t table_oid) {
   //  CHECK IF IT'S ALREADY LOADED - SEQUENTIAL FOR NOW
@@ -75,10 +86,10 @@ int load_columns(int64_t table_oid) {
 
   for (int i=0; i<=filesize/sizeof(Column); i++) {
     if ( fread(temp_col, sizeof(Column), 1, columns_file) != 1 ) break;
-    printf("Loop - col_oid: %d col_table_oid: %d table_oid: %d\n", temp_col->column_oid, temp_col->table_oid, table_oid);
+    //printf("Loop - col_oid: %d col_table_oid: %d table_oid: %d\n", temp_col->column_oid, temp_col->table_oid, table_oid);
     // PUSH COLUMN TO TABLE METADATA, UPDATE COLUMN COUNT
     if ( temp_col->table_oid == table_oid ) {
-      printf("Column OID %d matched\n", temp_col->column_oid);
+      //printf("Column OID %d matched\n", temp_col->column_oid);
       metadata->columns[metadata->column_count] = *temp_col;
       metadata->column_count++;
     };
@@ -92,7 +103,9 @@ int load_columns(int64_t table_oid) {
   return 0;
 }
 
-void load_all_columns(){
+/////////////////////////////////
+//
+/*void load_all_columns(){
   Column *col = malloc(sizeof(Column));
   FILE *columns_file = fopen(COLUMNS_FILE, "rb");
   fseek(columns_file, 0, SEEK_END);
@@ -106,7 +119,10 @@ void load_all_columns(){
     
   }
 }
+*/
 
+/////////////////////////////////
+//
 char *get_columns_from_table_oid(int64_t table_oid){
   
 
@@ -116,12 +132,18 @@ char *get_columns_from_table_oid(int64_t table_oid){
 
 ///////////////////////////    SYSTEM TABLES   /////////////////////////
 void create_table_of_dbs(){
-
+  //create_table();
 
 };
 
-void create_table_of_tables(){};
+////////////////////////////////
+//
+void create_table_of_tables(){
 
+};
+
+//////////////////////////////
+//
 void create_system_tables() {
 /*
   1. Create a table of tables with columns ( name, oid, db_oid, type(database)  ) 
@@ -129,10 +151,11 @@ void create_system_tables() {
   3. Create a table of indexes with columns (name, oid, type(index) )
 */
   create_table_of_dbs();
-  create_table_of_tables();
-  
+  create_table_of_tables();  
 };
 
+/////////////////////////////
+//
 void load_tables_metadata(){
   // READ TABLES FILE
   FILE *tables_file = fopen(TABLES_FILE, "rb");
@@ -154,9 +177,23 @@ void load_tables_metadata(){
   free(t);
 };
 
+/////////////////////////////////////
+//
+// CONVERT TO HASHTABLE
+TableMetadata *get_table_metadata(uint64_t table_oid){
+  int i = 0;
+  while(tables_metadata[i].table_oid != NULL){
+    if ( tables_metadata[i].table_oid == table_oid ) {
+      return &tables_metadata[i];
+    }
+  }
+  return NULL;
+}
+
 ///////////////////////////////////////////////////////////////////////
 
 ///////////////////////////    TABLES     ///////////////////////////////
+//
 int64_t get_table_oid(Context *context, char *name) {
   // INPUT TABLE NAME AND GET TABLE_OID ELSE RETURNS 1 -  WITHIN CURRENT DB
   //printf("Confirming table doesn't exist\n");
@@ -176,14 +213,16 @@ int64_t get_table_oid(Context *context, char *name) {
   //printf("Closing file..\n"); 
   fclose(tables_file);
   
-  return 1;
+  return NULL;
 }
 
-void create_table(Context *context, Table table){
+//////////////////////////////
+//
+int create_table(Context *context, Table table){
   // CHECK TABLE NAME EXISTENCE IN DATABASE
-  if ( get_table_oid(ctx, table.name) != 1 ) {
+  if ( get_table_oid(ctx, table.name) ) {
     printf("Table %s already exists.\n", table.name);
-    return;
+    return 1;
   } 
   else {
 
@@ -223,7 +262,7 @@ void create_table(Context *context, Table table){
 
     printf("Metadata written to tables file\n");
     fclose(tables_file);
-
+    return 0;
   }
 };
 
@@ -231,6 +270,7 @@ void create_table(Context *context, Table table){
 /////////////////////////    END TABLES     //////////////////////////////
 
 /////////////////////////    DATABASES    /////////////////////////////
+//
 int database_exists( char *database_name ) {
   
     
@@ -254,7 +294,8 @@ int database_exists( char *database_name ) {
     return 0;
 }
 
-
+///////////////////////////////////
+//
 int create_database( Database database ) {
       if ( database_exists(database.name) ){
         printf("Database Exists\n");
