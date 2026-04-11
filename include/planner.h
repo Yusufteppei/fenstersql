@@ -2,6 +2,13 @@
 #define PLANNER_H
 
 #include <stdint.h>
+#include "data.h"
+
+// FOR THE BISON PARSING RECURSION
+typedef struct TempCol {
+    Column data;
+    struct TempCol *next;
+} TempCol;
   
 typedef enum { 
     PLANNER_NODE_SELECT, 
